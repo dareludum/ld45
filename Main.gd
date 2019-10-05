@@ -33,54 +33,64 @@ func _ready():
 	tick_timer.wait_time = Globals.TICK_TIME
 	self.add_child(tick_timer)
 
+	# TESTING CODE BEGIN
+
+	var source = preload("res://scenes/Source.tscn").instance()
+	source.init(hex_grid, HexCell.new(Vector3(-2, 1, 1)), HexCell.DIR_SE)
+	$CellHolder.add_child(source)
+
+	var mirror = preload("res://scenes/Mirror.tscn").instance()
+	mirror.init(hex_grid, HexCell.new(Vector3(0, -1, 1)), HexCell.DIR_SE)
+	$CellHolder.add_child(mirror)
+
+	# TESTING CODE END
+
 	sim_restart()
-
-	tick_timer.start()
-
 
 func sim_restart():
 	crashed = false
 
-	var to_delete = []
-	for child in get_children():
-		if child is Ball or child is Source or child is Mirror:
-			to_delete.append(child)
+	# remove balls
+	var to_delete = $BallHolder.get_children()
 	for child in to_delete:
 		remove_child(child)
 		child.queue_free()
 
-	# Below is testing code
-	var source = preload("res://scenes/Source.tscn").instance()
-	source.init(hex_grid, HexCell.new(Vector3(-2, 1, 1)), HexCell.DIR_SE)
-	self.add_child(source)
+	# reset rotations
+	for child in $CellHolder.get_children():
+		child.direction = HexCell.DIR_SE
+		child.rotation_degrees = child.cell.direction_to_degrees(child.direction)
 
-	var mirror = preload("res://scenes/Mirror.tscn").instance()
-	mirror.init(hex_grid, HexCell.new(Vector3(0, -1, 1)), HexCell.DIR_SE)
-	self.add_child(mirror)
+	# TESTING CODE BEGIN
 
 	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
 	var b0 = Ball1.instance()
 	b0.init(hex_grid, HexCell.new(offset01 - HexCell.DIR_NE), HexCell.DIR_NE)
-	self.add_child(b0)
+	$BallHolder.add_child(b0)
 
 	var b1 = Ball1.instance()
 	b1.init(hex_grid, HexCell.new(offset01 - HexCell.DIR_SW), HexCell.DIR_SW)
-	self.add_child(b1)
+	$BallHolder.add_child(b1)
 
 	var i = 0
 	while i < len(HexCell.DIR_ALL):
 		var dir = HexCell.DIR_ALL[i]
 		var ball = Ball1.instance()
 		ball.init(hex_grid, HexCell.new(-(3 + i) * dir), dir)
-		self.add_child(ball)
+		$BallHolder.add_child(ball)
 		i += 1
+
+	# TESTING CODE END
+
+	tick_timer.start()
 
 
 func _process(delta: float) -> void:
 	interpolation_t = min(1.0, interpolation_t + 2 * delta * (1.0 / Globals.TICK_TIME))
-	for child in self.get_children():
-		if child is BaseCell:
-			child.animation_process(interpolation_t)
+	for child in $CellHolder.get_children():
+		child.animation_process(interpolation_t)
+	for child in $BallHolder.get_children():
+		child.animation_process(interpolation_t)
 
 
 func _unhandled_input(event):
@@ -102,13 +112,6 @@ func _unhandled_input(event):
 				sim_restart()
 			paused = not paused
 
-func get_balls() -> Array:
-	var balls = []
-	for child in self.get_children():
-		if child is Ball:
-			balls.append(child)
-	return balls
-
 
 func sim_crash(reason: String = "no reason") -> void:
 	print("sim_crash: %s" % reason)
@@ -126,17 +129,16 @@ func _game_tick():
 		return
 
 	# spawn new balls
-	for source in get_children():
+	for source in $CellHolder.get_children():
 		if source is Source:
 			var b = Ball1.instance()
 			b.init(hex_grid, HexCell.new(source.cell), source.direction)
-			add_child(b)
+			$BallHolder.add_child(b)
 
-	var balls = get_balls()
 	var balls_moving_to = {}  # hex_pos => [Ball]
 
 	# declare movement
-	for ball in balls:
+	for ball in $BallHolder.get_children():
 		ball.target_cell = HexCell.new(ball.cell.cube_coords + ball.direction)
 		if ball.target_cell.cube_coords in balls_moving_to:
 			balls_moving_to[ball.target_cell.cube_coords].append(ball)
@@ -144,13 +146,13 @@ func _game_tick():
 			balls_moving_to[ball.target_cell.cube_coords] = [ball]
 
 	# detect edge collisions (ball-ball or ball-structure)
-	for ball in balls:
+	for ball in $BallHolder.get_children():
 		for intruder in balls_moving_to.get(ball.cell.cube_coords, []):
 			if ball.target_cell.cube_coords == intruder.cell.cube_coords:
 				sim_crash("edge collision between %s and %s" % [ball.cell.cube_coords, intruder.cell.cube_coords])
 
 	# apply movement (even if crashed, to pause after the collision happens)
-	for ball in balls:
+	for ball in $BallHolder.get_children():
 		ball.move_to(ball.target_cell)
 
 	# detect cell collisions (2+ balls entering the same cell)
@@ -163,7 +165,7 @@ func _game_tick():
 			print("%d balls in cell %s" % [n, hex_pos])
 
 	# apply rotations
-	for child in self.get_children():
+	for child in $CellHolder.get_children():
 		if child is Source:
 			child.rotate_cw()
 
