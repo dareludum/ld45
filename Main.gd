@@ -23,6 +23,20 @@ func _ready():
 	self.add_child(tick_timer)
 
 	# Below is testing code
+
+	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
+	var b0 = Ball1.instance()
+	b0.hex_direction = HexCell.DIR_NE
+	b0.hex_position = HexCell.round_coords(offset01 - HexCell.DIR_NE)
+	b0.position = HexGrid.get_hex_center(b0.hex_position)
+	self.add_child(b0)
+
+	var b1 = Ball1.instance()
+	b1.hex_direction = HexCell.DIR_SW
+	b1.hex_position = HexCell.round_coords(offset01 - HexCell.DIR_SW)
+	b1.position = HexGrid.get_hex_center(b1.hex_position)
+	self.add_child(b1)
+
 	var i = 0
 	while i < len(HexCell.DIR_ALL):
 		var dir = HexCell.DIR_ALL[i]
@@ -76,7 +90,7 @@ func _game_tick():
 		else:
 			balls_moving_to[ball.target_hex_pos] = [ball]
 
-	# detect edge collisions
+	# detect edge collisions (ball-ball or ball-structure)
 	for ball in balls:
 		for intruder in balls_moving_to.get(ball.hex_position, []):
 			if ball.target_hex_pos == intruder.hex_position:
@@ -86,5 +100,13 @@ func _game_tick():
 	for ball in balls:
 		ball.hex_position = ball.target_hex_pos
 		ball.move_to(HexGrid.get_hex_center(ball.hex_position))  # todo: do this inside the ball
+
+	# detect cell collisions (2+ balls entering the same cell)
+	for hex_pos in balls_moving_to:
+		var visitors = balls_moving_to[hex_pos]
+		var n = len(visitors)
+		if n < 2:
+			continue
+		print("%d balls in cell %s" % [n, hex_pos])
 
 	print("Tick")
