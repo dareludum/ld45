@@ -23,7 +23,6 @@ func _ready():
 		for j in range(-20, 20):
 			var cell = preload("res://scenes/Cell.tscn").instance()
 			cell.position = hex_grid.get_hex_center(Vector2(i, j))
-			cell.scale = Vector2(0.33, 0.33)
 			$BackgroundCellHolder.add_child(cell)
 	assert(OK == tick_timer.connect("timeout", self, "_game_tick"))
 	tick_timer.autostart = false
@@ -31,6 +30,16 @@ func _ready():
 	self.add_child(tick_timer)
 
 	# Below is testing code
+
+	var source = preload("res://scenes/Source.tscn").instance()
+	source.hex_position = Vector3(-2, 1, 1)
+	source.position = HexGrid.get_hex_center(source.hex_position)
+	self.add_child(source)
+
+	var mirror = preload("res://scenes/Mirror.tscn").instance()
+	mirror.hex_position = Vector3(0, -1, 1)
+	mirror.position = HexGrid.get_hex_center(mirror.hex_position)
+	self.add_child(mirror)
 
 	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
 	var b0 = Ball1.instance()
