@@ -5,7 +5,7 @@ const Globals = preload("res://scripts/Globals.gd")
 const Ball1 = preload("res://scenes/Ball1.tscn")
 const Ball = preload("res://scripts/Ball.gd")
 
-var HexCell = preload("res://HexCell.gd").new()
+var HexCell = preload("res://HexCell.gd")
 var HexGrid = preload("res://HexGrid.gd")
 var hex_grid = HexGrid.new()
 
@@ -48,29 +48,27 @@ func sim_restart():
 
 	# Below is testing code
 	var source = preload("res://scenes/Source.tscn").instance()
-	source.hex_position = Vector3(-2, 1, 1)
-	source.position = hex_grid.get_hex_center(source.hex_position)
+	source.init(hex_grid, HexCell.new(Vector3(-2, 1, 1)), HexCell.DIR_SE)
 	self.add_child(source)
 
 	var mirror = preload("res://scenes/Mirror.tscn").instance()
-	mirror.hex_position = Vector3(0, -1, 1)
-	mirror.position = hex_grid.get_hex_center(mirror.hex_position)
+	mirror.init(hex_grid, HexCell.new(Vector3(0, -1, 1)), HexCell.DIR_SE)
 	self.add_child(mirror)
 
 	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
 	var b0 = Ball1.instance()
-	b0.init(HexCell.round_coords(offset01 - HexCell.DIR_NE), HexCell.DIR_NE, hex_grid)
+	b0.init(hex_grid, HexCell.new(offset01 - HexCell.DIR_NE), HexCell.DIR_NE)
 	self.add_child(b0)
 
 	var b1 = Ball1.instance()
-	b1.init(HexCell.round_coords(offset01 - HexCell.DIR_SW), HexCell.DIR_SW, hex_grid)
+	b1.init(hex_grid, HexCell.new(offset01 - HexCell.DIR_SW), HexCell.DIR_SW)
 	self.add_child(b1)
 
 	var i = 0
 	while i < len(HexCell.DIR_ALL):
 		var dir = HexCell.DIR_ALL[i]
 		var ball = Ball1.instance()
-		ball.init(HexCell.round_coords(-(3 + i) * dir), dir, hex_grid)
+		ball.init(hex_grid, HexCell.new(-(3 + i) * dir), dir)
 		self.add_child(ball)
 		i += 1
 
@@ -129,21 +127,21 @@ func _game_tick():
 
 	# declare movement
 	for ball in balls:
-		ball.target_hex_pos = HexCell.round_coords(ball.hex_position + ball.hex_direction)
-		if ball.target_hex_pos in balls_moving_to:
-			balls_moving_to[ball.target_hex_pos].append(ball)
+		ball.target_cell = HexCell.new(ball.cell.cube_coords + ball.direction)
+		if ball.target_cell.cube_coords in balls_moving_to:
+			balls_moving_to[ball.target_cell.cube_coords].append(ball)
 		else:
-			balls_moving_to[ball.target_hex_pos] = [ball]
+			balls_moving_to[ball.target_cell.cube_coords] = [ball]
 
 	# detect edge collisions (ball-ball or ball-structure)
 	for ball in balls:
-		for intruder in balls_moving_to.get(ball.hex_position, []):
-			if ball.target_hex_pos == intruder.hex_position:
-				sim_crash("edge collision between %s and %s" % [ball.hex_position, intruder.hex_position])
+		for intruder in balls_moving_to.get(ball.cell.cube_coords, []):
+			if ball.target_cell.cube_coords == intruder.cell.cube_coords:
+				sim_crash("edge collision between %s and %s" % [ball.cell.cube_coords, intruder.cell.cube_coords])
 
 	# apply movement (even if crashed, to pause after the collision happens)
 	for ball in balls:
-		ball.move_to(ball.target_hex_pos)
+		ball.move_to(ball.target_cell)
 
 	# detect cell collisions (2+ balls entering the same cell)
 	if not crashed:
