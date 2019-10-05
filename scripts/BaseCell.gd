@@ -11,9 +11,12 @@ var cell: HexCell
 var direction = Vector3.ZERO
 
 # WARNING: this is not _init (Script.new) but a custom init to be called after Node.instance
-func init(grid: HexGrid, cell: HexCell, direction: Vector3) -> void:
+func init(grid: HexGrid, cell_or_hex_pos, direction: Vector3) -> void:
 	self.grid = grid
-	self.cell = cell
+	if cell_or_hex_pos is HexCell:
+		self.cell = cell_or_hex_pos
+	else:
+		self.cell = HexCell.new(cell_or_hex_pos)
 	self.direction = direction
 	self.position = grid.get_hex_center(cell.cube_coords)
 	_on_init()

@@ -36,11 +36,11 @@ func _ready():
 	# TESTING CODE BEGIN
 
 	var source = preload("res://scenes/Source.tscn").instance()
-	source.init(hex_grid, HexCell.new(Vector3(-2, 1, 1)), HexCell.DIR_SE)
+	source.init(hex_grid, Vector3(-2, 1, 1), HexCell.DIR_SE)
 	$CellHolder.add_child(source)
 
 	var mirror = preload("res://scenes/Mirror.tscn").instance()
-	mirror.init(hex_grid, HexCell.new(Vector3(0, -1, 1)), HexCell.DIR_SE)
+	mirror.init(hex_grid, Vector3(0, -1, 1), HexCell.DIR_SE)
 	$CellHolder.add_child(mirror)
 
 	# TESTING CODE END
@@ -70,13 +70,13 @@ func sim_reset():
 	b1.init(hex_grid, HexCell.new(offset01 - HexCell.DIR_SW), HexCell.DIR_SW)
 	$BallHolder.add_child(b1)
 
-	var i = 0
-	while i < len(HexCell.DIR_ALL):
-		var dir = HexCell.DIR_ALL[i]
-		var ball = Ball1.instance()
-		ball.init(hex_grid, HexCell.new(-(3 + i) * dir), dir)
-		$BallHolder.add_child(ball)
-		i += 1
+#	var i = 0
+#	while i < len(HexCell.DIR_ALL):
+#		var dir = HexCell.DIR_ALL[i]
+#		var ball = Ball1.instance()
+#		ball.init(hex_grid, HexCell.new(-(3 + i) * dir), dir)
+#		$BallHolder.add_child(ball)
+#		i += 1
 
 	# TESTING CODE END
 
@@ -179,6 +179,18 @@ func _game_tick():
 			if n < 2:
 				continue
 			print("%d balls in cell %s" % [n, hex_pos])
+
+	# apply structure collision rules
+	for child in $CellHolder.get_children():
+		var hex_pos = child.cell.cube_coords
+		if not hex_pos in balls_moving_to:
+			continue
+
+		var visitors = balls_moving_to[hex_pos]
+		if child is Source:
+			sim_crash("ball entered a source at %s" % hex_pos)
+		if child is Mirror:
+			child.balls_entered(visitors, self)
 
 	# apply rotations
 	for child in $CellHolder.get_children():
