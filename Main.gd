@@ -2,8 +2,10 @@
 extends Node2D
 
 const Globals = preload("res://scripts/Globals.gd")
+const BaseCell = preload("res://scripts/BaseCell.gd")
 const Ball1 = preload("res://scenes/Ball1.tscn")
 const Ball = preload("res://scripts/Ball.gd")
+const Source = preload("res://scripts/Source.gd")
 
 var HexCell = preload("res://HexCell.gd")
 var HexGrid = preload("res://HexGrid.gd")
@@ -76,7 +78,7 @@ func sim_restart():
 func _process(delta: float) -> void:
 	interpolation_t = min(1.0, interpolation_t + 2 * delta * (1.0 / Globals.TICK_TIME))
 	for child in self.get_children():
-		if child is Ball:
+		if child is BaseCell:
 			child.animation_process(interpolation_t)
 
 
@@ -151,6 +153,11 @@ func _game_tick():
 			if n < 2:
 				continue
 			print("%d balls in cell %s" % [n, hex_pos])
+
+	# rotate sources
+	for child in self.get_children():
+		if child is Source:
+			child.rotate_cw()
 
 	interpolation_t = 0.0
 	print("Tick")

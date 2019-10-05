@@ -254,6 +254,7 @@ func rotate_direction_cw(dir):
 		return DIR_SE
 	assert(false)
 
+
 func rotate_direction_ccw(dir):
 	if dir == DIR_SE:
 		return DIR_NE
@@ -267,4 +268,20 @@ func rotate_direction_ccw(dir):
 		return DIR_S
 	if dir == DIR_S:
 		return DIR_SE
+	assert(false)
+
+
+func direction_to_degrees(dir):
+	if dir == DIR_SE:
+		return 0.0
+	if dir == DIR_S:
+		return 60.0
+	if dir == DIR_SW:
+		return 120.0
+	if dir == DIR_NW:
+		return 180.0
+	if dir == DIR_N:
+		return 240.0
+	if dir == DIR_NE:
+		return 300.0
 	assert(false)

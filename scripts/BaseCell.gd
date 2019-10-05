@@ -20,3 +20,6 @@ func init(grid: HexGrid, cell: HexCell, direction: Vector3) -> void:
 
 func _on_init():
 	pass
+
+func animation_process(progress):
+	pass
