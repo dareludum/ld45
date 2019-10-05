@@ -17,6 +17,12 @@ var tick_timer = Timer.new()
 
 func _ready():
 	HexGrid.hex_scale = Vector2(50, 50)
+	for i in range(-20, 20):
+		for j in range(-20, 20):
+			var cell = preload("res://scenes/Cell.tscn").instance()
+			cell.position = HexGrid.get_hex_center(Vector2(i, j))
+			cell.scale = Vector2(0.33, 0.33)
+			$BackgroundCellHolder.add_child(cell)
 	assert(OK == tick_timer.connect("timeout", self, "_game_tick"))
 	tick_timer.autostart = false
 	tick_timer.wait_time = Globals.TICK_TIME
