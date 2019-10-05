@@ -5,7 +5,8 @@ const Globals = preload("res://scripts/Globals.gd")
 const BaseCell = preload("res://scripts/BaseCell.gd")
 const Ball1 = preload("res://scenes/Ball1.tscn")
 const Ball = preload("res://scripts/Ball.gd")
-const Source = preload("res://scripts/Source.gd")
+var Source = load("res://scripts/Source.gd")
+var Mirror = load("res://scripts/Mirror.gd")
 
 var HexCell = preload("res://HexCell.gd")
 var HexGrid = preload("res://HexGrid.gd")
@@ -42,7 +43,7 @@ func sim_restart():
 
 	var to_delete = []
 	for child in get_children():
-		if child is Ball:
+		if child is Ball or child is Source or child is Mirror:
 			to_delete.append(child)
 	for child in to_delete:
 		remove_child(child)
@@ -124,6 +125,13 @@ func _game_tick():
 			print("Paused")
 		return
 
+	# spawn new balls
+	for source in get_children():
+		if source is Source:
+			var b = Ball1.instance()
+			b.init(hex_grid, HexCell.new(source.cell), source.direction)
+			add_child(b)
+
 	var balls = get_balls()
 	var balls_moving_to = {}  # hex_pos => [Ball]
 
@@ -154,7 +162,7 @@ func _game_tick():
 				continue
 			print("%d balls in cell %s" % [n, hex_pos])
 
-	# rotate sources
+	# apply rotations
 	for child in self.get_children():
 		if child is Source:
 			child.rotate_cw()
