@@ -236,3 +236,36 @@ func line_to(target):
 	path.append(new_hex(target))
 	return path
 	
+
+"""
+	Extra stuff
+"""
+func rotate_direction_cw(dir):
+	if dir == DIR_SE:
+		return DIR_S
+	if dir == DIR_S:
+		return DIR_SW
+	if dir == DIR_SW:
+		return DIR_NW
+	if dir == DIR_NW:
+		return DIR_N
+	if dir == DIR_N:
+		return DIR_NE
+	if dir == DIR_NE:
+		return DIR_SE
+	assert(false)
+
+func rotate_direction_ccw(dir):
+	if dir == DIR_SE:
+		return DIR_NE
+	if dir == DIR_NE:
+		return DIR_N
+	if dir == DIR_N:
+		return DIR_NW
+	if dir == DIR_NW:
+		return DIR_SW
+	if dir == DIR_SW:
+		return DIR_S
+	if dir == DIR_S:
+		return DIR_SE
+	assert(false)
