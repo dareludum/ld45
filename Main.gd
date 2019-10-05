@@ -23,6 +23,7 @@ func _ready():
 
 	# Below is testing code
 	var ball = Ball1.instance()
+	ball.hex_direction = Vector3(1, -1, 0)
 	ball.position = HexGrid.get_hex_center(ball.hex_position)
 	self.add_child(ball)
 	tick_timer.start()
@@ -44,6 +45,6 @@ func _unhandled_input(event):
 func _game_tick():
 	for child in self.get_children():
 		if child is Ball:
-			child.hex_position += Vector3(1, -1, 0)
+			child.hex_position += child.hex_direction
 			child.move_to(HexGrid.get_hex_center(child.hex_position))
 	print("Tick")
