@@ -7,10 +7,13 @@ onready var highlight = get_node("Highlight")
 onready var area_coords = get_node("Highlight/AreaCoords")
 onready var hex_coords = get_node("Highlight/HexCoords")
 
+const Ball1 = preload("res://scenes/Ball1.tscn")
 
 func _ready():
 	HexGrid.hex_scale = Vector2(50, 50)
-	
+	var ball = Ball1.instance()
+	ball.position = HexGrid.get_hex_center(Vector3(0, 0, 0))
+	add_child(ball)
 
 func _unhandled_input(event):
 	if 'position' in event:
