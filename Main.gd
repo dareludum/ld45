@@ -14,6 +14,7 @@ onready var area_coords = get_node("Highlight/AreaCoords")
 onready var hex_coords = get_node("Highlight/HexCoords")
 
 var paused = true
+var crashed = false
 var tick_timer = Timer.new()
 var interpolation_t: float = 0
 
@@ -29,8 +30,23 @@ func _ready():
 	tick_timer.wait_time = Globals.TICK_TIME
 	self.add_child(tick_timer)
 
-	# Below is testing code
+	sim_restart()
 
+	tick_timer.start()
+
+
+func sim_restart():
+	crashed = false
+
+	var to_delete = []
+	for child in get_children():
+		if child is Ball:
+			to_delete.append(child)
+	for child in to_delete:
+		remove_child(child)
+		child.queue_free()
+
+	# Below is testing code
 	var source = preload("res://scenes/Source.tscn").instance()
 	source.hex_position = Vector3(-2, 1, 1)
 	source.position = hex_grid.get_hex_center(source.hex_position)
@@ -57,7 +73,6 @@ func _ready():
 		ball.init(HexCell.round_coords(-(3 + i) * dir), dir, hex_grid)
 		self.add_child(ball)
 		i += 1
-	tick_timer.start()
 
 
 func _process(delta: float) -> void:
@@ -82,6 +97,8 @@ func _unhandled_input(event):
 
 	if event is InputEventKey:
 		if event.pressed and event.scancode == KEY_SPACE:
+			if paused and crashed:
+				sim_restart()
 			paused = not paused
 
 func get_balls() -> Array:
@@ -92,10 +109,19 @@ func get_balls() -> Array:
 	return balls
 
 
+func sim_crash(reason: String = "no reason") -> void:
+	print("sim_crash: %s" % reason)
+	paused = true
+	crashed = true
+
+
 # Main logic function, does one simulation step
 func _game_tick():
 	if paused:
-		print("Paused")
+		if crashed:
+			print("Paused and crashed")
+		else:
+			print("Paused")
 		return
 
 	var balls = get_balls()
@@ -113,19 +139,20 @@ func _game_tick():
 	for ball in balls:
 		for intruder in balls_moving_to.get(ball.hex_position, []):
 			if ball.target_hex_pos == intruder.hex_position:
-				print("edge collision between %s and %s" % [ball.hex_position, intruder.hex_position])
+				sim_crash("edge collision between %s and %s" % [ball.hex_position, intruder.hex_position])
 
-	# apply movement
+	# apply movement (even if crashed, to pause after the collision happens)
 	for ball in balls:
 		ball.move_to(ball.target_hex_pos)
 
 	# detect cell collisions (2+ balls entering the same cell)
-	for hex_pos in balls_moving_to:
-		var visitors = balls_moving_to[hex_pos]
-		var n = len(visitors)
-		if n < 2:
-			continue
-		print("%d balls in cell %s" % [n, hex_pos])
+	if not crashed:
+		for hex_pos in balls_moving_to:
+			var visitors = balls_moving_to[hex_pos]
+			var n = len(visitors)
+			if n < 2:
+				continue
+			print("%d balls in cell %s" % [n, hex_pos])
 
 	interpolation_t = 0.0
 	print("Tick")
