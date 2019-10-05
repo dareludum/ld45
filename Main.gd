@@ -33,12 +33,12 @@ func _ready():
 
 	var source = preload("res://scenes/Source.tscn").instance()
 	source.hex_position = Vector3(-2, 1, 1)
-	source.position = HexGrid.get_hex_center(source.hex_position)
+	source.position = hex_grid.get_hex_center(source.hex_position)
 	self.add_child(source)
 
 	var mirror = preload("res://scenes/Mirror.tscn").instance()
 	mirror.hex_position = Vector3(0, -1, 1)
-	mirror.position = HexGrid.get_hex_center(mirror.hex_position)
+	mirror.position = hex_grid.get_hex_center(mirror.hex_position)
 	self.add_child(mirror)
 
 	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
