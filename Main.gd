@@ -16,8 +16,14 @@ onready var highlight = get_node("Highlight")
 onready var area_coords = get_node("Highlight/AreaCoords")
 onready var hex_coords = get_node("Highlight/HexCoords")
 
-var paused = true
-var crashed = false
+enum SimulationState {
+	RUNNING,
+	PAUSED,
+	STOPPED, # design mode
+	CRASHED,
+}
+
+var state = SimulationState.STOPPED
 var tick_timer = Timer.new()
 var interpolation_t: float = 0
 
@@ -45,9 +51,36 @@ func _ready():
 
 	# TESTING CODE END
 
-	sim_reset() # TODO: remove, for now it just sets up the testing config
+	sim_stop() # TODO: remove, for now it just sets up the testing config
 
-func sim_reset():
+
+func sim_start():
+	print("sim_start")
+	$Status.text = "Status: started"
+	$Status.modulate = Color.green
+
+	state = SimulationState.RUNNING
+	_game_tick()
+	tick_timer.start()
+
+
+func sim_pause():
+	print("sim_pause")
+	$Status.text = "Status: paused"
+	$Status.modulate = Color.orange
+
+	state = SimulationState.PAUSED
+	tick_timer.stop()
+
+
+func sim_stop():
+	print("sim_stop")
+	$Status.text = "Status: stopped"
+	$Status.modulate = Color.white
+
+	state = SimulationState.STOPPED
+	tick_timer.stop()
+
 	# remove balls
 	var to_delete = $BallHolder.get_children()
 	for child in to_delete:
@@ -80,31 +113,13 @@ func sim_reset():
 
 	# TESTING CODE END
 
-	crashed = false
-
-func sim_start():
-	print("sim_start")
-	$Status.text = "Status: started"
-	$Status.modulate = Color.green
-	paused = false
-	_game_tick()
-	tick_timer.start()
-
-
-func sim_stop():
-	print("sim_stop")
-	$Status.text = "Status: stopped"
-	$Status.modulate = Color.orange
-	paused = true
-	tick_timer.stop()
-
 
 func sim_crash(reason: String = "no reason") -> void:
 	print("sim_crash: %s" % reason)
 	$Status.text = "Status: crashed"
 	$Status.modulate = Color.red
-	paused = true
-	crashed = true
+
+	state = SimulationState.CRASHED
 	tick_timer.stop()
 
 
@@ -132,14 +147,12 @@ func _unhandled_input(event):
 	if event is InputEventKey:
 		if event.pressed:
 			if event.scancode == KEY_SPACE:
-				if not crashed:
-					if paused:
-						sim_start()
-					else:
-						sim_stop()
+				if state == SimulationState.STOPPED || state == SimulationState.PAUSED:
+					sim_start()
+				elif state == SimulationState.RUNNING:
+					sim_pause()
 			elif event.scancode == KEY_ESCAPE:
 				sim_stop()
-				sim_reset()
 
 
 # Main logic function, does one simulation step
@@ -172,7 +185,7 @@ func _game_tick():
 		ball.move_to(ball.target_cell)
 
 	# detect cell collisions (2+ balls entering the same cell)
-	if not crashed:
+	if state != SimulationState.CRASHED:
 		for hex_pos in balls_moving_to:
 			var visitors = balls_moving_to[hex_pos]
 			var n = len(visitors)
