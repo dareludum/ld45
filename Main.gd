@@ -151,14 +151,13 @@ func _unhandled_input(event):
 			highlight.position = hex_grid.get_hex_center(hex_grid.get_hex_at(relative_pos))
 
 	if event is InputEventKey:
-		if event.pressed:
-			if event.scancode == KEY_SPACE:
-				if state == SimulationState.STOPPED || state == SimulationState.PAUSED:
-					sim_start()
-				elif state == SimulationState.RUNNING:
-					sim_pause()
-			elif event.scancode == KEY_ESCAPE:
-				sim_stop()
+		if Input.is_action_pressed("sim_start_pause"):
+			if state == SimulationState.STOPPED || state == SimulationState.PAUSED:
+				sim_start()
+			elif state == SimulationState.RUNNING:
+				sim_pause()
+		elif Input.is_action_pressed("sim_stop"):
+			sim_stop()
 
 
 # Main logic function, does one simulation step
