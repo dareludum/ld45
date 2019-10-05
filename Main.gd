@@ -2,14 +2,16 @@
 extends Node2D
 
 const Globals = preload("res://scripts/Globals.gd")
+const HexCell = preload("res://HexCell.gd")
+const HexGrid = preload("res://HexGrid.gd")
 const BaseCell = preload("res://scripts/BaseCell.gd")
-const Ball1 = preload("res://scenes/Ball1.tscn")
 const Ball = preload("res://scripts/Ball.gd")
 var Source = load("res://scripts/Source.gd")
 var Mirror = load("res://scripts/Mirror.gd")
 
-var HexCell = preload("res://HexCell.gd")
-var HexGrid = preload("res://HexGrid.gd")
+const Ball1 = preload("res://scenes/Ball1.tscn")
+const MirrorScene = preload("res://scenes/Mirror.tscn")
+
 var hex_grid = HexGrid.new()
 
 onready var highlight = get_node("Highlight")
@@ -96,20 +98,24 @@ func sim_stop():
 
 	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
 	var b0 = Ball1.instance()
-	b0.init(hex_grid, HexCell.new(offset01 - HexCell.DIR_NE), HexCell.DIR_NE)
+	b0.init(hex_grid, offset01 - HexCell.DIR_NE, HexCell.DIR_NE)
 	$BallHolder.add_child(b0)
 
 	var b1 = Ball1.instance()
-	b1.init(hex_grid, HexCell.new(offset01 - HexCell.DIR_SW), HexCell.DIR_SW)
+	b1.init(hex_grid, offset01 - HexCell.DIR_SW, HexCell.DIR_SW)
 	$BallHolder.add_child(b1)
 
-#	var i = 0
-#	while i < len(HexCell.DIR_ALL):
-#		var dir = HexCell.DIR_ALL[i]
-#		var ball = Ball1.instance()
-#		ball.init(hex_grid, HexCell.new(-(3 + i) * dir), dir)
-#		$BallHolder.add_child(ball)
-#		i += 1
+	var offset_circle = HexCell.DIR_SW * 3
+	var dir = HexCell.DIR_SE
+	var pos = 2 * HexCell.DIR_S
+	var i = 0
+	while i < 6:
+		var mirror = MirrorScene.instance()
+		mirror.init(hex_grid, offset_circle + pos, dir)
+		$CellHolder.add_child(mirror)
+		pos -= 2 * dir
+		dir = mirror.cell.rotate_direction_cw(dir)
+		i += 1
 
 	# TESTING CODE END
 
