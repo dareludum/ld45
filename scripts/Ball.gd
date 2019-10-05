@@ -2,8 +2,8 @@ extends Node2D
 
 const Globals = preload("res://scripts/Globals.gd")
 
-var hex_position = Vector3(0, 0, 0)
-var hex_direction = Vector3(0, 0, 0)
+var hex_position = Vector3.ZERO
+var hex_direction = Vector3.ZERO
 var target_position: Vector2
 var tier = 1
 

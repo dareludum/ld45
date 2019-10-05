@@ -2,6 +2,7 @@
 extends Node2D
 
 const Globals = preload("res://scripts/Globals.gd")
+const HexCell = preload("res://HexCell.gd")
 
 const Ball1 = preload("res://scenes/Ball1.tscn")
 const Ball = preload("res://scripts/Ball.gd")
@@ -23,7 +24,7 @@ func _ready():
 
 	# Below is testing code
 	var ball = Ball1.instance()
-	ball.hex_direction = Vector3(1, -1, 0)
+	ball.hex_direction = HexCell.DIR_SE
 	ball.position = HexGrid.get_hex_center(ball.hex_position)
 	self.add_child(ball)
 	tick_timer.start()
