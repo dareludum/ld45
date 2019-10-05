@@ -59,3 +59,10 @@ margin_top = -19.0
 margin_right = 105.0
 margin_bottom = -5.0
 text = "HEX"
+
+[node name="Status" type="Label" parent="Area2D"]
+margin_left = -505.262
+margin_top = -293.101
+margin_right = -458.262
+margin_bottom = -279.101
+text = "Status"

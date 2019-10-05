@@ -45,11 +45,9 @@ func _ready():
 
 	# TESTING CODE END
 
-	sim_restart()
+	sim_reset() # TODO: remove, for now it just sets up the testing config
 
-func sim_restart():
-	crashed = false
-
+func sim_reset():
 	# remove balls
 	var to_delete = $BallHolder.get_children()
 	for child in to_delete:
@@ -58,8 +56,8 @@ func sim_restart():
 
 	# reset rotations
 	for child in $CellHolder.get_children():
-		child.direction = HexCell.DIR_SE
-		child.rotation_degrees = child.cell.direction_to_degrees(child.direction)
+		if child is Source:
+			child.reset_position()
 
 	# TESTING CODE BEGIN
 
@@ -82,7 +80,32 @@ func sim_restart():
 
 	# TESTING CODE END
 
+	crashed = false
+
+func sim_start():
+	print("sim_start")
+	$Status.text = "Status: started"
+	$Status.modulate = Color.green
+	paused = false
+	_game_tick()
 	tick_timer.start()
+
+
+func sim_stop():
+	print("sim_stop")
+	$Status.text = "Status: stopped"
+	$Status.modulate = Color.orange
+	paused = true
+	tick_timer.stop()
+
+
+func sim_crash(reason: String = "no reason") -> void:
+	print("sim_crash: %s" % reason)
+	$Status.text = "Status: crashed"
+	$Status.modulate = Color.red
+	paused = true
+	crashed = true
+	tick_timer.stop()
 
 
 func _process(delta: float) -> void:
@@ -107,27 +130,20 @@ func _unhandled_input(event):
 			highlight.position = hex_grid.get_hex_center(hex_grid.get_hex_at(relative_pos))
 
 	if event is InputEventKey:
-		if event.pressed and event.scancode == KEY_SPACE:
-			if paused and crashed:
-				sim_restart()
-			paused = not paused
-
-
-func sim_crash(reason: String = "no reason") -> void:
-	print("sim_crash: %s" % reason)
-	paused = true
-	crashed = true
+		if event.pressed:
+			if event.scancode == KEY_SPACE:
+				if not crashed:
+					if paused:
+						sim_start()
+					else:
+						sim_stop()
+			elif event.scancode == KEY_ESCAPE:
+				sim_stop()
+				sim_reset()
 
 
 # Main logic function, does one simulation step
 func _game_tick():
-	if paused:
-		if crashed:
-			print("Paused and crashed")
-		else:
-			print("Paused")
-		return
-
 	# spawn new balls
 	for source in $CellHolder.get_children():
 		if source is Source:
