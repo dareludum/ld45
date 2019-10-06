@@ -51,7 +51,7 @@ var picked_tool_direction: Vector3
 # Run time - specific
 var tick_timer = Timer.new()
 var interpolation_t: float = 0
-var tick: int = 0
+var tick: int = 0   # counts simulation steps, resets to 0 in sim_start
 var score: int = 0
 
 
@@ -219,7 +219,7 @@ func sim_stop():
 	for child in $CellHolder.get_children():
 		if child is Source:
 			child.reset_position()
-	
+
 	# reset background
 	for child in $BackgroundCellHolder.get_children():
 		child.reset()
@@ -260,7 +260,11 @@ func sim_stop():
 
 
 func sim_crash(reason: String = "no reason", locations: Array = []) -> void:
-	print("sim_crash: %s" % reason)
+	if locations:
+		print("sim_crash: %s at %s" % [reason, locations])
+	else:
+		print("sim_crash: %s (location missing)" % reason)
+	$Background.self_modulate = BackgroundColorCrashed
 	state = SimulationState.CRASHED
 	tick_timer.stop()
 
@@ -288,14 +292,24 @@ func _process(delta: float) -> void:
 		child.animation_process(interpolation_t)
 
 
-func new_floating_text(cell_or_hex_pos, delay: float, text: String):
+func new_floating_text(cell_or_hex_pos, show_delay: float, text: String):
 	var ft = FloatingTextScene.instance()
 	if cell_or_hex_pos is HexCell:
 		ft.position = hex_grid.get_hex_center(cell_or_hex_pos.cube_coords)
 	else:
 		ft.position = hex_grid.get_hex_center(cell_or_hex_pos)
 	$FloatingTextHolder.add_child(ft)
-	ft.start(text, delay)
+	ft.start(text, show_delay)
+
+
+func add_ball(cell_or_pos, direction: Vector3, show_delay: float = 0.0):
+	var b = BallScene.instance()
+	b.init(hex_grid, HexCell.new(cell_or_pos), direction)
+	$BallHolder.add_child(b)
+	if show_delay > 0.0:
+		b.hide()
+		show_node_in(show_delay, b)
+	return b
 
 
 # this executes asynchronously, i.e. the call returns immediately,
@@ -305,6 +319,10 @@ func queue_free_in(delay: float, nodes: Array):
 	for node in nodes:
 		node.queue_free()
 
+
+func show_node_in(delay: float, node):
+	yield(get_tree().create_timer(delay), "timeout")
+	node.show()
 
 func _unhandled_input(event):
 	if event is InputEventMouse:
@@ -365,9 +383,7 @@ func _game_tick():
 	# spawn new balls
 	for source in $CellHolder.get_children():
 		if source is Source:
-			var b = BallScene.instance()
-			b.init(hex_grid, HexCell.new(source.cell), source.direction)
-			$BallHolder.add_child(b)
+			add_ball(source.cell, source.direction)
 
 	var balls_moving_to = {}  # hex_pos => [Ball]
 
@@ -429,12 +445,82 @@ func balls_collided(balls, hex_pos):
 		sim_crash("multiple balls collided", [hex_pos])
 		return
 
-	var points = 1
+	var b0: Ball = balls[0]
+	var b1: Ball = balls[1]
+	var d0: int = HexCell.DIR_ALL.find(b0.direction)
+	var d1: int = HexCell.DIR_ALL.find(b1.direction)
+	var direction_difference = abs(d0 - d1)
+	# a number between 0 and 3, where 0 means d0 == d1, and 3 means d0 == -d1
+	direction_difference = min(direction_difference, 6 - direction_difference)
+	assert(direction_difference > 0)
+
+	var points = 0
+	var to_delete = []
 	var time_to_collision = get_animation_time()
-	new_floating_text(0.5 * (balls[0].cell.cube_coords + balls[1].cell.cube_coords), time_to_collision, "+" + str(points))
-	queue_free_in(time_to_collision, balls)
+
+	if b0.tier != b1.tier:
+		# different tiers: the lower one is converted to points, the higher one survives
+		if b0.tier > b1.tier:
+			var tmp = b0
+			b0 = b1
+			b1 = b0
+		points = b0.tier
+		to_delete.append(b1)
+	else:  # b0.tier == b1.tier
+		if direction_difference == 1:
+			# 60 degrees: emit points, downgrade the balls
+			if b0.tier <= 1:
+				points = 1
+				to_delete.append(b0)
+				to_delete.append(b1)
+			else:
+				points = 2 * b0.tier
+				b0.set_tier(b0.tier - 1, time_to_collision)
+				b1.set_tier(b1.tier - 1, time_to_collision)
+		# 120 degrees: merge the balls, emit points, and sometimes new balls
+		elif direction_difference == 2:
+			var d2 = (d0 + d1) / 2
+			if abs(d2 - d0) != 1:
+				d2 = (d2 + 3) % 6  # DIR_ALL[d2] = 0.5 * (DIR_ALL[d0] + DIR_ALL[1])
+			b0.direction = HexCell.DIR_ALL[d2]
+
+			if b0.tier <= 1:
+				points = 1
+				to_delete.append(b1)
+			elif b0.tier == 2:
+				points = 6
+			elif b0.tier == 3:
+				points = 15
+
+			if b0.tier > 1:
+				b1.set_tier(b1.tier - 1, time_to_collision)
+				add_ball(b1.cell, HexCell.DIR_ALL[d0], time_to_collision).set_tier(b1.tier)
+				add_ball(b1.cell, -HexCell.DIR_ALL[d2], time_to_collision).set_tier(b1.tier)
+		# 180 degrees: emit points and sometimes new balls
+		elif direction_difference == 3:
+			if b0.tier <= 1:
+				points = 2
+				to_delete.append(b0)
+				to_delete.append(b1)
+			elif b0.tier == 2:
+				points = 10
+			elif b0.tier == 3:
+				points = 24
+
+			if b0.tier > 1:
+				b0.direction = HexCell.DIR_ALL[(d0 + 1) % 6]
+				b1.direction = HexCell.DIR_ALL[(d1 + 1) % 6]
+				b0.set_tier(b0.tier - 1, time_to_collision)
+				b1.set_tier(b1.tier - 1, time_to_collision)
+				add_ball(b0.cell, HexCell.DIR_ALL[(d0 + 5) % 6], time_to_collision).set_tier(b0.tier)
+				add_ball(b0.cell, HexCell.DIR_ALL[(d1 + 5) % 6], time_to_collision).set_tier(b0.tier)
+
+	if points > 0:
+		new_floating_text(0.5 * (b0.cell.cube_coords + b1.cell.cube_coords), time_to_collision, "+" + str(points))
+	queue_free_in(time_to_collision, to_delete)
+
 	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
-	for ball in balls:
+	for ball in to_delete:
 		$BallHolder.remove_child(ball)
 		$BallToDeleteHolder.add_child(ball)
 
