@@ -12,6 +12,7 @@ func _on_init():
 		-directions_in[1],
 		-directions_in[0]
 	]
+	self.rotation_degrees = self.cell.direction_to_degrees(self.direction)
 
 
 func balls_entered(balls, main) -> void:

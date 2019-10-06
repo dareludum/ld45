@@ -43,13 +43,28 @@ func _ready():
 
 	# TESTING CODE BEGIN
 
-	var source = preload("res://scenes/Source.tscn").instance()
-	source.init(hex_grid, Vector3(-2, 1, 1), HexCell.DIR_SE)
-	$CellHolder.add_child(source)
+#	var source = preload("res://scenes/Source.tscn").instance()
+#	source.init(hex_grid, Vector3(-2, 1, 1), HexCell.DIR_SE)
+#	$CellHolder.add_child(source)
 
-	var mirror = preload("res://scenes/Mirror.tscn").instance()
-	mirror.init(hex_grid, Vector3(0, -1, 1), HexCell.DIR_SE)
-	$CellHolder.add_child(mirror)
+#	var mirror = MirrorScene.instance()
+#	mirror.init(hex_grid, Vector3(0, -1, 1), HexCell.DIR_SE)
+#	$CellHolder.add_child(mirror)
+
+	for circle in [  # the ball positions in sim_stop are coupled with this
+			{center = HexCell.DIR_SW * 3, radius = 2},
+			{center = HexCell.DIR_SE * 3, radius = 1},
+		]:
+		var dir = HexCell.DIR_SE
+		var pos = circle.radius * HexCell.DIR_S
+		var i = 0
+		while i < 6:
+			var mirror = MirrorScene.instance()
+			mirror.init(hex_grid, circle.center + pos, dir)
+			$CellHolder.add_child(mirror)
+			pos -= circle.radius * dir
+			dir = mirror.cell.rotate_direction_cw(dir)
+			i += 1
 
 	# TESTING CODE END
 
@@ -96,26 +111,15 @@ func sim_stop():
 
 	# TESTING CODE BEGIN
 
+	# balls to run around the circle, positions coupled with _ready
 	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
 	var b0 = Ball1.instance()
-	b0.init(hex_grid, offset01 - HexCell.DIR_NE, HexCell.DIR_NE)
+	b0.init(hex_grid, HexCell.DIR_SW * 3 + HexCell.DIR_NE + HexCell.DIR_N, HexCell.DIR_SE)
 	$BallHolder.add_child(b0)
 
 	var b1 = Ball1.instance()
-	b1.init(hex_grid, offset01 - HexCell.DIR_SW, HexCell.DIR_SW)
+	b1.init(hex_grid, HexCell.DIR_SE * 4, HexCell.DIR_N)
 	$BallHolder.add_child(b1)
-
-	var offset_circle = HexCell.DIR_SW * 3
-	var dir = HexCell.DIR_SE
-	var pos = 2 * HexCell.DIR_S
-	var i = 0
-	while i < 6:
-		var mirror = MirrorScene.instance()
-		mirror.init(hex_grid, offset_circle + pos, dir)
-		$CellHolder.add_child(mirror)
-		pos -= 2 * dir
-		dir = mirror.cell.rotate_direction_cw(dir)
-		i += 1
 
 	# TESTING CODE END
 
@@ -162,6 +166,11 @@ func _unhandled_input(event):
 
 # Main logic function, does one simulation step
 func _game_tick():
+	if state != SimulationState.RUNNING:
+		# no time to debug why this happens
+		tick_timer.stop()
+		return
+
 	# spawn new balls
 	for source in $CellHolder.get_children():
 		if source is Source:
