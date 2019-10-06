@@ -40,7 +40,6 @@ func _ready():
 			$BackgroundCellHolder.add_child(cell)
 	assert(OK == tick_timer.connect("timeout", self, "_game_tick"))
 	tick_timer.autostart = false
-	tick_timer.wait_time = Globals.TICK_TIME
 	self.add_child(tick_timer)
 
 	# TESTING CODE BEGIN
@@ -74,6 +73,7 @@ func _ready():
 
 	# TESTING CODE END
 
+	sim_set_speed(1)
 	sim_stop() # TODO: remove, for now it just sets up the testing config
 
 
@@ -152,8 +152,19 @@ func sim_crash(reason: String = "no reason") -> void:
 	tick_timer.stop()
 
 
+func sim_set_speed(speed: int):
+	if speed == 1:
+		tick_timer.wait_time = Globals.TICK_TIME
+	elif speed == 2:
+		tick_timer.wait_time = Globals.TICK_TIME_FAST
+	elif speed == 3:
+		tick_timer.wait_time = Globals.TICK_TIME_FASTEST
+	else:
+		assert(false)
+
+
 func _process(delta: float) -> void:
-	interpolation_t = min(1.0, interpolation_t + delta / Globals.ANIMATION_TIME)
+	interpolation_t = min(1.0, interpolation_t + delta / Globals.get_animation_time(tick_timer.wait_time))
 	for child in $CellHolder.get_children():
 		child.animation_process(interpolation_t)
 	for child in $BallHolder.get_children():
@@ -167,7 +178,7 @@ func new_floating_text(cell_or_hex_pos, text: String):
 	else:
 		ft.position = hex_grid.get_hex_center(cell_or_hex_pos)
 	$FloatingTextHolder.add_child(ft)
-	ft.start(text, Globals.ANIMATION_TIME)
+	ft.start(text, Globals.get_animation_time(tick_timer.wait_time))
 
 
 func _unhandled_input(event):
@@ -191,6 +202,12 @@ func _unhandled_input(event):
 				sim_pause()
 		elif Input.is_action_pressed("sim_stop"):
 			sim_stop()
+		elif Input.is_action_pressed("sim_speed_1"):
+			sim_set_speed(1)
+		elif Input.is_action_pressed("sim_speed_2"):
+			sim_set_speed(2)
+		elif Input.is_action_pressed("sim_speed_3"):
+			sim_set_speed(3)
 
 
 # Main logic function, does one simulation step
