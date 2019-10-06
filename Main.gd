@@ -12,6 +12,7 @@ var Mirror = load("res://scripts/Mirror.gd")
 const Ball1 = preload("res://scenes/Ball1.tscn")
 const MirrorScene = preload("res://scenes/Mirror.tscn")
 const AmplifierScene = preload("res://scenes/Amplifier.tscn")
+const FloatingTextScene = preload("res://scenes/FloatingText.tscn")
 
 var hex_grid = HexGrid.new()
 
@@ -159,6 +160,16 @@ func _process(delta: float) -> void:
 		child.animation_process(interpolation_t)
 
 
+func new_floating_text(cell_or_hex_pos, text: String):
+	var ft = FloatingTextScene.instance()
+	if cell_or_hex_pos is HexCell:
+		ft.position = hex_grid.get_hex_center(cell_or_hex_pos.cube_coords)
+	else:
+		ft.position = hex_grid.get_hex_center(cell_or_hex_pos)
+	$FloatingTextHolder.add_child(ft)
+	ft.start(text, Globals.ANIMATION_TIME)
+
+
 func _unhandled_input(event):
 	if 'position' in event:
 		var relative_pos = self.transform.affine_inverse() * event.position
@@ -252,6 +263,6 @@ func balls_collided(balls):
 		sim_crash("multiple balls collided")
 		return
 
-	print("+1 energy")
+	new_floating_text(0.5 * (balls[0].cell.cube_coords + balls[1].cell.cube_coords), "+1")
 	balls[0].queue_free()
 	balls[1].queue_free()
