@@ -76,6 +76,9 @@ func _ready():
 
 	# TESTING CODE BEGIN
 
+	if DEBUG_ALL_TOOLS_UNLOCKED:
+		$UIBar.set_hi(9999)
+
 #	var source = preload("res://scenes/Source.tscn").instance()
 #	source.init(hex_grid, Vector3(-2, 1, 1), HexCell.DIR_SE)
 #	$CellHolder.add_child(source)
@@ -470,13 +473,14 @@ func balls_collided(balls, hex_pos):
 	var time_to_collision = get_animation_time()
 
 	if b0.tier != b1.tier:
-		# different tiers: the lower one is converted to points, the higher one survives
+		# different tiers: the lower one is converted to points, the higher one loses energy
 		if b0.tier > b1.tier:
 			var tmp = b0
 			b0 = b1
-			b1 = b0
-		points = b0.tier
-		to_delete.append(b1)
+			b1 = tmp
+		points = b0.tier + b1.tier
+		b1.set_tier(b1.tier - b0.tier, time_to_collision)
+		to_delete.append(b0)
 	else:  # b0.tier == b1.tier
 		if direction_difference == 1:
 			# 60 degrees: emit points, downgrade the balls
