@@ -3,6 +3,16 @@ extends BaseCell
 var interpolation_deg_from: float
 var interpolation_deg_to: float
 
+
+var orig_direction: Vector3
+
+
+func _on_init():
+	orig_direction = self.direction
+	self.rotation_degrees = HexCell.direction_to_degrees(self.direction)
+	reset_position()
+
+
 func animation_process(progress: float):  # progress is between 0 and 1
 	if progress >= 1.0:
 		self.rotation_degrees = interpolation_deg_to
@@ -13,14 +23,14 @@ func animation_process(progress: float):  # progress is between 0 and 1
 
 
 func reset_position():
-	self.direction = HexCell.DIR_SE
-	interpolation_deg_to = self.cell.direction_to_degrees(self.direction)
+	self.direction = orig_direction
+	interpolation_deg_to = HexCell.direction_to_degrees(self.direction)
 	interpolation_deg_from = interpolation_deg_to
 
 
 func rotate_cw():
-	interpolation_deg_from = self.cell.direction_to_degrees(self.direction)
-	self.direction = self.cell.rotate_direction_cw(self.direction)
-	interpolation_deg_to = self.cell.direction_to_degrees(self.direction)
+	interpolation_deg_from = HexCell.direction_to_degrees(self.direction)
+	self.direction = HexCell.rotate_direction_cw(self.direction)
+	interpolation_deg_to = HexCell.direction_to_degrees(self.direction)
 	if interpolation_deg_to < interpolation_deg_from:
 		interpolation_deg_to += 360.0

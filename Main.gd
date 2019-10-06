@@ -98,17 +98,45 @@ func _ready():
 # ===== Simulation Editor =====
 
 
+func sim_get_tool_cell(cell):
+	if picked_tool == EditorTool.ERASER:
+		return null
+
+	var new_cell = null
+	if picked_tool == EditorTool.SOURCE:
+		new_cell = SourceScene.instance()
+	elif picked_tool == EditorTool.MIRROR:
+		new_cell = MirrorScene.instance()
+	elif picked_tool == EditorTool.AMPLIFIER:
+		new_cell = AmplifierScene.instance()
+	else:
+		assert(false)
+
+	new_cell.init(hex_grid, cell, picked_tool_direction)
+
+	return new_cell
+
+
+func sim_update_tool_highlight():
+	for child in $Highlight/ToolHolder.get_children():
+		child.queue_free()
+	$Highlight/ToolHolder.add_child(sim_get_tool_cell(HexCell.new(Vector3.ZERO)))
+
+
 func sim_set_tool(tool_):
 	picked_tool = tool_
 	picked_tool_direction = HexCell.DIR_SE
+	sim_update_tool_highlight()
 
 
 func sim_rotate_tool_cw():
 	picked_tool_direction = HexCell.rotate_direction_cw(picked_tool_direction)
+	sim_update_tool_highlight()
 
 
 func sim_rotate_tool_ccw():
 	picked_tool_direction = HexCell.rotate_direction_ccw(picked_tool_direction)
+	sim_update_tool_highlight()
 
 
 func sim_cell_click(cell):
@@ -121,18 +149,8 @@ func sim_cell_click(cell):
 
 	if picked_tool == EditorTool.ERASER:
 		return
-	
-	var new_cell = null
-	if picked_tool == EditorTool.SOURCE:
-		new_cell = SourceScene.instance()
-	elif picked_tool == EditorTool.MIRROR:
-		new_cell = MirrorScene.instance()
-	elif picked_tool == EditorTool.AMPLIFIER:
-		new_cell = AmplifierScene.instance()
-	else:
-		assert(false)
 
-	new_cell.init(hex_grid, cell, picked_tool_direction)
+	var new_cell = sim_get_tool_cell(cell)
 	$CellHolder.add_child(new_cell)
 
 

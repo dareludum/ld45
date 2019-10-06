@@ -63,6 +63,8 @@ margin_right = 105.0
 margin_bottom = -5.0
 text = "HEX"
 
+[node name="ToolHolder" type="Node2D" parent="Area2D/Highlight"]
+
 [node name="UIBar" parent="Area2D" instance=ExtResource( 3 )]
 margin_left = -512.248
 margin_top = -300.122
