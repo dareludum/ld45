@@ -239,7 +239,7 @@ func line_to(target):
 """
 	Extra stuff
 """
-func rotate_direction_cw(dir):
+static func rotate_direction_cw(dir):
 	if dir == DIR_SE:
 		return DIR_S
 	if dir == DIR_S:
@@ -255,7 +255,7 @@ func rotate_direction_cw(dir):
 	assert(false)
 
 
-func rotate_direction_ccw(dir):
+static func rotate_direction_ccw(dir):
 	if dir == DIR_SE:
 		return DIR_NE
 	if dir == DIR_NE:
@@ -271,7 +271,7 @@ func rotate_direction_ccw(dir):
 	assert(false)
 
 
-func direction_to_degrees(dir):
+static func direction_to_degrees(dir):
 	if dir == DIR_SE:
 		return 0.0
 	if dir == DIR_S:

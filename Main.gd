@@ -10,6 +10,7 @@ var Source = load("res://scripts/Source.gd")
 var Mirror = load("res://scripts/Mirror.gd")
 
 const Ball1 = preload("res://scenes/Ball1.tscn")
+const SourceScene = preload("res://scenes/Source.tscn")
 const MirrorScene = preload("res://scenes/Mirror.tscn")
 const AmplifierScene = preload("res://scenes/Amplifier.tscn")
 const FloatingTextScene = preload("res://scenes/FloatingText.tscn")
@@ -27,7 +28,16 @@ enum SimulationState {
 	CRASHED,
 }
 
+enum EditorTool {
+	ERASER,
+	SOURCE,
+	MIRROR,
+	AMPLIFIER,
+}
+
 var state = SimulationState.STOPPED
+var picked_tool
+var picked_tool_direction: Vector3
 var tick_timer = Timer.new()
 var interpolation_t: float = 0
 
@@ -74,7 +84,63 @@ func _ready():
 	# TESTING CODE END
 
 	sim_set_speed(1)
+	sim_set_tool(EditorTool.ERASER)
 	sim_stop() # TODO: remove, for now it just sets up the testing config
+
+
+# ===== Simulation Editor =====
+
+
+func sim_set_tool(tool_):
+	picked_tool = tool_
+	picked_tool_direction = HexCell.DIR_SE
+
+
+func sim_rotate_tool_cw():
+	picked_tool_direction = HexCell.rotate_direction_cw(picked_tool_direction)
+
+
+func sim_rotate_tool_ccw():
+	picked_tool_direction = HexCell.rotate_direction_ccw(picked_tool_direction)
+
+
+func sim_cell_click(cell):
+	if state != SimulationState.STOPPED:
+		return
+
+	for child in $CellHolder.get_children():
+		if child.cell.cube_coords == cell.cube_coords:
+			child.queue_free()
+
+	if picked_tool == EditorTool.ERASER:
+		return
+	
+	var new_cell = null
+	if picked_tool == EditorTool.SOURCE:
+		new_cell = SourceScene.instance()
+	elif picked_tool == EditorTool.MIRROR:
+		new_cell = MirrorScene.instance()
+	elif picked_tool == EditorTool.AMPLIFIER:
+		new_cell = AmplifierScene.instance()
+	else:
+		assert(false)
+
+	new_cell.init(hex_grid, cell, picked_tool_direction)
+	$CellHolder.add_child(new_cell)
+
+
+# ===== Simulation Running =====
+
+
+func sim_set_speed(speed: int):
+	if speed == 1:
+		tick_timer.wait_time = Globals.TICK_TIME
+	elif speed == 2:
+		tick_timer.wait_time = Globals.TICK_TIME_FAST
+	elif speed == 3:
+		tick_timer.wait_time = Globals.TICK_TIME_FASTEST
+	else:
+		assert(false)
 
 
 func sim_start():
@@ -152,15 +218,7 @@ func sim_crash(reason: String = "no reason") -> void:
 	tick_timer.stop()
 
 
-func sim_set_speed(speed: int):
-	if speed == 1:
-		tick_timer.wait_time = Globals.TICK_TIME
-	elif speed == 2:
-		tick_timer.wait_time = Globals.TICK_TIME_FAST
-	elif speed == 3:
-		tick_timer.wait_time = Globals.TICK_TIME_FASTEST
-	else:
-		assert(false)
+# ===== End of simulation code =====
 
 
 func _process(delta: float) -> void:
@@ -190,32 +248,51 @@ func queue_free_in(delay: float, nodes: Array):
 
 
 func _unhandled_input(event):
-	if 'position' in event:
+	if event is InputEventMouse:
 		var relative_pos = self.transform.affine_inverse() * event.position
+		var cell = hex_grid.get_hex_at(relative_pos)
+
 		# Display the coords used
 		if area_coords != null:
 			area_coords.text = str(relative_pos)
 		if hex_coords != null:
-			hex_coords.text = str(hex_grid.get_hex_at(relative_pos).axial_coords)
+			hex_coords.text = str(cell.axial_coords)
 
 		# Snap the highlight to the nearest grid cell
 		if highlight != null:
-			highlight.position = hex_grid.get_hex_center(hex_grid.get_hex_at(relative_pos))
+			highlight.position = hex_grid.get_hex_center(cell)
+
+		if event is InputEventMouseButton:
+			if (event.button_index == BUTTON_LEFT and event.is_pressed()
+				and $CollisionBox.get_viewport_rect().has_point(event.position)):
+					sim_cell_click(cell)
 
 	if event is InputEventKey:
-		if Input.is_action_pressed("sim_start_pause"):
+		if Input.is_action_just_pressed("sim_start_pause"):
 			if state == SimulationState.STOPPED || state == SimulationState.PAUSED:
 				sim_start()
 			elif state == SimulationState.RUNNING:
 				sim_pause()
-		elif Input.is_action_pressed("sim_stop"):
+		elif Input.is_action_just_pressed("sim_stop"):
 			sim_stop()
-		elif Input.is_action_pressed("sim_speed_1"):
+		elif Input.is_action_just_pressed("sim_speed_1"):
 			sim_set_speed(1)
-		elif Input.is_action_pressed("sim_speed_2"):
+		elif Input.is_action_just_pressed("sim_speed_2"):
 			sim_set_speed(2)
-		elif Input.is_action_pressed("sim_speed_3"):
+		elif Input.is_action_just_pressed("sim_speed_3"):
 			sim_set_speed(3)
+		elif Input.is_action_just_pressed("sim_rotate_left"):
+			sim_rotate_tool_ccw()
+		elif Input.is_action_just_pressed("sim_rotate_right"):
+			sim_rotate_tool_cw()
+		elif Input.is_action_just_pressed("sim_pick_eraser"):
+			sim_set_tool(EditorTool.ERASER)
+		elif Input.is_action_just_pressed("sim_pick_source"):
+			sim_set_tool(EditorTool.SOURCE)
+		elif Input.is_action_just_pressed("sim_pick_mirror"):
+			sim_set_tool(EditorTool.MIRROR)
+		elif Input.is_action_just_pressed("sim_pick_amplifier"):
+			sim_set_tool(EditorTool.AMPLIFIER)
 
 
 # Main logic function, does one simulation step
