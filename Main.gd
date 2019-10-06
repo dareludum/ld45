@@ -393,6 +393,13 @@ func _game_tick():
 		return
 
 	tick += 1
+	var ball_holder = $BallHolder
+
+	# delete balls that are out of the simulation area
+	for ball in ball_holder.get_children():
+		if ball.cell.cube_coords.length_squared() > 1200.0:  # 3 * 20^2
+			ball_holder.remove_child(ball)
+			ball.queue_free()
 
 	# spawn new balls
 	for source in $CellHolder.get_children():
@@ -402,7 +409,7 @@ func _game_tick():
 	var balls_moving_to = {}  # hex_pos => [Ball]
 
 	# declare movement
-	for ball in $BallHolder.get_children():
+	for ball in ball_holder.get_children():
 		ball.target_cell = HexCell.new(ball.cell.cube_coords + ball.direction)
 		if ball.target_cell.cube_coords in balls_moving_to:
 			balls_moving_to[ball.target_cell.cube_coords].append(ball)
@@ -410,14 +417,14 @@ func _game_tick():
 			balls_moving_to[ball.target_cell.cube_coords] = [ball]
 
 	# detect edge collisions (ball-ball swapping places)
-	for ball in $BallHolder.get_children():
+	for ball in ball_holder.get_children():
 		for intruder in balls_moving_to.get(ball.cell.cube_coords, []):
 			if ball.target_cell.cube_coords == intruder.cell.cube_coords:
 				var locations = [ball.cell.cube_coords, intruder.cell.cube_coords]
 				sim_crash("edge collision between %s and %s" % locations, locations)
 
 	# apply movement (even if crashed, to pause after the collision happens)
-	for ball in $BallHolder.get_children():
+	for ball in ball_holder.get_children():
 		ball.move_to(ball.target_cell)
 
 	# detect ball-structure collisions
