@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scripts/UIBar.gd" type="Script" id=1]
 [ext_resource path="res://fonts/HintFont.tres" type="DynamicFont" id=2]
@@ -9,7 +9,8 @@
 [ext_resource path="res://scenes/UIButtonBig.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/Source.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/Mirror.tscn" type="PackedScene" id=9]
-[ext_resource path="res://scenes/Amplifier.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/ButtonLock.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/Amplifier.tscn" type="PackedScene" id=11]
 
 [node name="UIBar" type="Control"]
 anchor_right = 1.0
@@ -24,29 +25,29 @@ color = Color( 0.133333, 0.164706, 0.411765, 1 )
 [node name="HintPanel" type="ColorRect" parent="."]
 visible = false
 margin_top = 80.0
-margin_right = 220.0
+margin_right = 250.0
 margin_bottom = 110.0
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="Background" type="ColorRect" parent="HintPanel"]
 margin_left = 5.0
-margin_right = 215.0
+margin_right = 245.0
 margin_bottom = 25.0
 color = Color( 0.270588, 0.301961, 0.564706, 1 )
 
 [node name="TextHint" type="Label" parent="HintPanel"]
-margin_left = 12.8557
-margin_top = 4.23196
-margin_right = 210.856
-margin_bottom = 21.232
+margin_left = 13.0
+margin_top = 4.0
+margin_right = 211.0
+margin_bottom = 21.0
 custom_fonts/font = ExtResource( 2 )
 text = "This is not the right blah (C)"
 
 [node name="BackgroundInner" type="ColorRect" parent="."]
-margin_left = 5.0
-margin_top = 4.86472
-margin_right = 1019.0
-margin_bottom = 74.8647
+margin_left = 5.04602
+margin_top = 5.10719
+margin_right = 1019.05
+margin_bottom = 75.1072
 color = Color( 0.270588, 0.301961, 0.564706, 1 )
 
 [node name="PointsHolder" type="Control" parent="."]
@@ -249,13 +250,23 @@ text_hint = "Pick Mirror (S)"
 [node name="Mirror" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 9 )]
 position = Vector2( 24.5394, 24.7835 )
 
+[node name="Lock" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 10 )]
+target = 10
+
 [node name="ButtonCellAmplifier" parent="CellHolder" instance=ExtResource( 7 )]
 margin_left = 186.474
-margin_top = 5.78587
+margin_top = 5.13791
 margin_right = 236.474
-margin_bottom = 55.7859
+margin_bottom = 55.1379
 key_hint = "D"
 text_hint = "Pick Amplifier (D)"
 
-[node name="Amplifier" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 10 )]
+[node name="Amplifier" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 11 )]
 position = Vector2( 24.5873, 24.5032 )
+
+[node name="Lock" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 10 )]
+margin_left = -0.279327
+margin_top = -0.317152
+margin_right = 49.7207
+margin_bottom = 49.6828
+target = 40

@@ -1,5 +1,7 @@
 extends Control
 
+const Globals = preload("res://scripts/Globals.gd")
+
 
 func _enter_tree():
 	assert(OK == $SimControlHolder/ButtonStartPause.connect("mouse_enter", self, "_on_button_mouse_enter"))
@@ -34,6 +36,13 @@ func set_points(points: int):
 
 func set_hi(points: int):
 	$PointsHolder/TextHI.text = str(points)
+	var locks = [
+		$CellHolder/ButtonCellMirror/Lock,
+		$CellHolder/ButtonCellAmplifier/Lock,
+	]
+	for lock in locks:
+		if points >= lock.target:
+			lock.visible = false
 
 
 func simulate_input_event(name):
@@ -46,7 +55,11 @@ func simulate_input_event(name):
 
 
 func _on_button_mouse_enter(button):
-	$HintPanel/TextHint.text = button.text_hint
+	var lock = button.get_node("Lock")
+	if lock != null and lock.visible:
+		$HintPanel/TextHint.text = "Get %d points in %d iterations to unlock" % [lock.target, Globals.TARGET_ITERATIONS_COUNT]
+	else:
+		$HintPanel/TextHint.text = button.text_hint
 	$HintPanel.visible = true
 
 

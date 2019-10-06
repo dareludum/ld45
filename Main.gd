@@ -41,10 +41,18 @@ enum EditorTool {
 	AMPLIFIER,
 }
 
+const TOOL_UNLOCK_TARGETS = {
+	EditorTool.ERASER: 0,
+	EditorTool.SOURCE: 0,
+	EditorTool.MIRROR: 10,
+	EditorTool.AMPLIFIER: 40,
+}
+
 var state = SimulationState.STOPPED
 var hi_score: int = 0
 
 # Design time - specific
+const DEBUG_ALL_TOOLS_UNLOCKED = true # Does not show buttons
 var picked_tool
 var picked_tool_direction: Vector3
 
@@ -106,6 +114,9 @@ func _ready():
 
 
 func sim_get_tool_cell(cell):
+	if (not DEBUG_ALL_TOOLS_UNLOCKED and hi_score < TOOL_UNLOCK_TARGETS[picked_tool]):
+		return
+
 	if picked_tool == EditorTool.ERASER:
 		return null
 
@@ -207,7 +218,7 @@ func sim_stop():
 	state = SimulationState.STOPPED
 	tick_timer.stop()
 
-	if tick >= 60 and score > hi_score:
+	if tick >= Globals.TARGET_ITERATIONS_COUNT and score > hi_score:
 		hi_score = score
 		$UIBar.set_hi(hi_score)
 
@@ -524,5 +535,5 @@ func balls_collided(balls, hex_pos):
 		$BallHolder.remove_child(ball)
 		$BallToDeleteHolder.add_child(ball)
 
-	if tick <= 60:
+	if tick <= Globals.TARGET_ITERATIONS_COUNT:
 		sim_add_points(points)
