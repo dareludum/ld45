@@ -11,6 +11,7 @@ var Mirror = load("res://scripts/Mirror.gd")
 
 const Ball1 = preload("res://scenes/Ball1.tscn")
 const MirrorScene = preload("res://scenes/Mirror.tscn")
+const AmplifierScene = preload("res://scenes/Amplifier.tscn")
 
 var hex_grid = HexGrid.new()
 
@@ -66,6 +67,10 @@ func _ready():
 			dir = mirror.cell.rotate_direction_cw(dir)
 			i += 1
 
+	var amplifier = AmplifierScene.instance()
+	amplifier.init(hex_grid, HexCell.new(Vector3.ZERO), HexCell.DIR_SE)
+	$CellHolder.add_child(amplifier)
+
 	# TESTING CODE END
 
 	sim_stop() # TODO: remove, for now it just sets up the testing config
@@ -120,6 +125,10 @@ func sim_stop():
 	var b1 = Ball1.instance()
 	b1.init(hex_grid, HexCell.DIR_SE * 4, HexCell.DIR_N)
 	$BallHolder.add_child(b1)
+
+	var amp_ball = Ball1.instance()
+	amp_ball.init(hex_grid, HexCell.new(HexCell.DIR_N + HexCell.DIR_N), HexCell.DIR_S)
+	$BallHolder.add_child(amp_ball)
 
 	# TESTING CODE END
 
