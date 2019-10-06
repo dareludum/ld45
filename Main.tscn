@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://images/fill.png" type="Texture" id=2]
+[ext_resource path="res://scenes/UIBar.tscn" type="PackedScene" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 512, 300 )
+extents = Vector2( 512, 220 )
 
 [node name="Main" type="Node"]
 
@@ -18,8 +19,8 @@ shape = SubResource( 1 )
 
 [node name="Background" type="Sprite" parent="Area2D"]
 self_modulate = Color( 0.286275, 0.317647, 0.560784, 1 )
-position = Vector2( 0.831848, 1.16791 )
-scale = Vector2( 102.243, 59.8968 )
+position = Vector2( 0.831848, 1.22691 )
+scale = Vector2( 102.243, 59.885 )
 texture = ExtResource( 2 )
 
 [node name="BackgroundCellHolder" type="Node2D" parent="Area2D"]
@@ -66,3 +67,9 @@ margin_top = -293.101
 margin_right = -458.262
 margin_bottom = -279.101
 text = "Status"
+
+[node name="UIBar" parent="Area2D" instance=ExtResource( 3 )]
+margin_left = -512.248
+margin_top = -300.122
+margin_right = -512.248
+margin_bottom = -300.122
