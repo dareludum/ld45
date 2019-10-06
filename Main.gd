@@ -2,11 +2,9 @@
 extends Node2D
 
 const BackgroundColorEditor = Color("#49518f")
-const BackgroundColorRunning = Color("#49518f")
-const BackgroundColorPaused = Color("#49518f")
-# const BackgroundColorRunning = Color("#457e8f")
-# const BackgroundColorPaused = Color("#8f8e45")
-const BackgroundColorCrashed = Color("#8f4572")
+const BackgroundColorRunning = Color("#495b8f")
+const BackgroundColorPaused = Color("#49688f")
+const BackgroundColorCrashed = Color("#64498f")
 
 const Globals = preload("res://scripts/Globals.gd")
 const HexCell = preload("res://HexCell.gd")
