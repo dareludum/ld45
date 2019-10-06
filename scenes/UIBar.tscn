@@ -1,14 +1,15 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://scripts/UIBar.gd" type="Script" id=1]
-[ext_resource path="res://scenes/UIButtonSmall.tscn" type="PackedScene" id=2]
-[ext_resource path="res://fonts/KeyHintFontSmall.tres" type="DynamicFont" id=3]
-[ext_resource path="res://images/rotate_right.png" type="Texture" id=4]
-[ext_resource path="res://images/rotate_left.png" type="Texture" id=5]
-[ext_resource path="res://scenes/UIButtonBig.tscn" type="PackedScene" id=6]
-[ext_resource path="res://scenes/Source.tscn" type="PackedScene" id=7]
-[ext_resource path="res://scenes/Mirror.tscn" type="PackedScene" id=8]
-[ext_resource path="res://scenes/Amplifier.tscn" type="PackedScene" id=9]
+[ext_resource path="res://fonts/HintFont.tres" type="DynamicFont" id=2]
+[ext_resource path="res://scenes/UIButtonSmall.tscn" type="PackedScene" id=3]
+[ext_resource path="res://fonts/KeyHintFontSmall.tres" type="DynamicFont" id=4]
+[ext_resource path="res://images/rotate_right.png" type="Texture" id=5]
+[ext_resource path="res://images/rotate_left.png" type="Texture" id=6]
+[ext_resource path="res://scenes/UIButtonBig.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/Source.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/Mirror.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/Amplifier.tscn" type="PackedScene" id=10]
 
 [node name="UIBar" type="Control"]
 anchor_right = 1.0
@@ -19,6 +20,27 @@ script = ExtResource( 1 )
 margin_right = 1024.0
 margin_bottom = 80.0
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="HintPanel" type="ColorRect" parent="."]
+visible = false
+margin_top = 80.0
+margin_right = 220.0
+margin_bottom = 110.0
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="Background" type="ColorRect" parent="HintPanel"]
+margin_left = 5.0
+margin_right = 215.0
+margin_bottom = 25.0
+color = Color( 0.270588, 0.301961, 0.564706, 1 )
+
+[node name="TextHint" type="Label" parent="HintPanel"]
+margin_left = 12.8557
+margin_top = 4.23196
+margin_right = 210.856
+margin_bottom = 21.232
+custom_fonts/font = ExtResource( 2 )
+text = "This is not the right blah (C)"
 
 [node name="BackgroundInner" type="ColorRect" parent="."]
 margin_left = 5.0
@@ -92,17 +114,19 @@ margin_right = 166.0
 margin_bottom = 70.0
 rect_pivot_offset = Vector2( 50, 40 )
 
-[node name="ButtonStartPause" parent="SimControlHolder" instance=ExtResource( 2 )]
+[node name="ButtonStartPause" parent="SimControlHolder" instance=ExtResource( 3 )]
 margin_left = 6.02704
 margin_top = 3.11557
 margin_right = 30.027
 margin_bottom = 27.1155
+text_hint = "Start/pause the simulation (Space)"
 
-[node name="ButtonStop" parent="SimControlHolder" instance=ExtResource( 2 )]
+[node name="ButtonStop" parent="SimControlHolder" instance=ExtResource( 3 )]
 margin_left = 35.7133
 margin_top = 3.11557
 margin_right = 59.7133
 margin_bottom = 27.1155
+text_hint = "Stop the simulation (Esc)"
 
 [node name="ColorRect3" type="ColorRect" parent="SimControlHolder"]
 margin_left = 6.0
@@ -125,11 +149,12 @@ margin_right = 212.0
 margin_bottom = 70.0
 rect_pivot_offset = Vector2( 50, 40 )
 
-[node name="ButtonRotateLeft" parent="RotationHolder" instance=ExtResource( 2 )]
+[node name="ButtonRotateLeft" parent="RotationHolder" instance=ExtResource( 3 )]
 margin_left = 6.02704
 margin_top = 3.11557
 margin_right = 30.027
 margin_bottom = 27.1155
+text_hint = "Rotate the cell right (E)"
 
 [node name="KeyHint" type="ColorRect" parent="RotationHolder/ButtonRotateLeft"]
 margin_left = 12.0
@@ -143,20 +168,21 @@ margin_left = 2.67836
 margin_top = -0.36549
 margin_right = 11.6784
 margin_bottom = 12.6345
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource( 4 )
 text = "E"
 
 [node name="Sprite" type="Sprite" parent="RotationHolder/ButtonRotateLeft"]
 position = Vector2( 12.0804, 12.0034 )
 rotation = 0.0523599
 scale = Vector2( 0.1, 0.1 )
-texture = ExtResource( 4 )
+texture = ExtResource( 5 )
 
-[node name="ButtonRotateRight" parent="RotationHolder" instance=ExtResource( 2 )]
+[node name="ButtonRotateRight" parent="RotationHolder" instance=ExtResource( 3 )]
 margin_left = 5.90494
 margin_top = 32.6605
 margin_right = 29.9049
 margin_bottom = 56.6604
+text_hint = "Rotate the cell left (Q)"
 
 [node name="KeyHint2" type="ColorRect" parent="RotationHolder/ButtonRotateRight"]
 margin_left = 11.9516
@@ -170,14 +196,14 @@ margin_left = 3.7579
 margin_top = -0.338558
 margin_right = 12.7579
 margin_bottom = 12.6614
-custom_fonts/font = ExtResource( 3 )
+custom_fonts/font = ExtResource( 4 )
 text = "Q"
 
 [node name="Sprite" type="Sprite" parent="RotationHolder/ButtonRotateRight"]
 position = Vector2( 12.1573, 12.3882 )
 rotation = -0.0523599
 scale = Vector2( 0.1, 0.1 )
-texture = ExtResource( 5 )
+texture = ExtResource( 6 )
 
 [node name="Separator3" type="ColorRect" parent="."]
 margin_left = 215.831
@@ -193,39 +219,43 @@ margin_right = 354.0
 margin_bottom = 70.0
 rect_pivot_offset = Vector2( 50, 40 )
 
-[node name="ButtonCellEraser" parent="CellHolder" instance=ExtResource( 6 )]
+[node name="ButtonCellEraser" parent="CellHolder" instance=ExtResource( 7 )]
 margin_left = 5.98224
 margin_top = 5.37181
 margin_right = 55.9822
 margin_bottom = 55.3718
 key_hint = "R"
+text_hint = "Pick Eraser (R)"
 
-[node name="ButtonCellSource" parent="CellHolder" instance=ExtResource( 6 )]
+[node name="ButtonCellSource" parent="CellHolder" instance=ExtResource( 7 )]
 margin_left = 66.4151
 margin_top = 4.76137
 margin_right = 116.415
 margin_bottom = 54.7614
 key_hint = "A"
+text_hint = "Pick Source (A)"
 
-[node name="Source" parent="CellHolder/ButtonCellSource" instance=ExtResource( 7 )]
+[node name="Source" parent="CellHolder/ButtonCellSource" instance=ExtResource( 8 )]
 position = Vector2( 24.295, 25.2719 )
 
-[node name="ButtonCellMirror" parent="CellHolder" instance=ExtResource( 6 )]
+[node name="ButtonCellMirror" parent="CellHolder" instance=ExtResource( 7 )]
 margin_left = 126.237
 margin_top = 5.12763
 margin_right = 176.237
 margin_bottom = 55.1276
 key_hint = "S"
+text_hint = "Pick Mirror (S)"
 
-[node name="Mirror" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 8 )]
+[node name="Mirror" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 9 )]
 position = Vector2( 24.5394, 24.7835 )
 
-[node name="ButtonCellAmplifier" parent="CellHolder" instance=ExtResource( 6 )]
-margin_left = 186.182
-margin_top = 5.49389
-margin_right = 236.182
-margin_bottom = 55.4939
+[node name="ButtonCellAmplifier" parent="CellHolder" instance=ExtResource( 7 )]
+margin_left = 186.474
+margin_top = 5.78587
+margin_right = 236.474
+margin_bottom = 55.7859
 key_hint = "D"
+text_hint = "Pick Amplifier (D)"
 
-[node name="Amplifier" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 9 )]
+[node name="Amplifier" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 10 )]
 position = Vector2( 24.5873, 24.5032 )
