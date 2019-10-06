@@ -319,15 +319,17 @@ func sim_stop():
 
 
 func sim_crash(reason: String = "no reason", locations: Array = []) -> void:
+	tick_timer.stop()
+	state = SimulationState.CRASHED
+
 	if locations:
 		print("sim_crash: %s at %s" % [reason, locations])
 	else:
 		print("sim_crash: %s (location missing)" % reason)
 	$Background.self_modulate = BackgroundColorCrashed
-	state = SimulationState.CRASHED
-	tick_timer.stop()
+	$StatusBar/TextStatus.text = "Crashed: " + reason
+	$StatusBar/TextStatus.self_modulate = Color.orangered
 
-	$Background.self_modulate = BackgroundColorCrashed
 	for location in locations:
 		for child in $BackgroundCellHolder.get_children():
 			if child.cell.cube_coords == location:
@@ -476,7 +478,7 @@ func _game_tick():
 		for intruder in balls_moving_to.get(ball.cell.cube_coords, []):
 			if ball.target_cell.cube_coords == intruder.cell.cube_coords:
 				var locations = [ball.cell.cube_coords, intruder.cell.cube_coords]
-				sim_crash("edge collision between %s and %s" % locations, locations)
+				sim_crash("balls collided on a cell edge", locations)
 
 	# apply movement (even if crashed, to pause after the collision happens)
 	for ball in ball_holder.get_children():
@@ -490,7 +492,7 @@ func _game_tick():
 
 		var visitors = balls_moving_to[hex_pos]
 		if child is Source:
-			sim_crash("ball entered a source at %s" % hex_pos, [hex_pos])
+			sim_crash("ball collided with a source", [hex_pos])
 		elif child is Mirror or child is Amplifier:
 			child.balls_entered(visitors, self)
 

@@ -17,7 +17,7 @@ func _on_init():
 
 func balls_entered(balls, main) -> void:
 	if len(balls) > 1:
-		main.sim_crash("multiple balls entered a mirror", [self.cell.cube_coords])
+		main.sim_crash("balls collided inside a mirror", [self.cell.cube_coords])
 		return
 
 	var ball = balls[0]
@@ -28,4 +28,4 @@ func balls_entered(balls, main) -> void:
 		ball.direction = directions_out[1]
 		return
 
-	main.sim_crash("ball entered a mirror from the wrong side", [self.cell.cube_coords])
+	main.sim_crash("ball collided with a mirror", [self.cell.cube_coords])

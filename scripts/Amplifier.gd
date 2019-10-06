@@ -2,7 +2,7 @@ extends BaseCell
 
 func balls_entered(balls, main) -> void:
 	if len(balls) > 1:
-		main.sim_crash("multiple balls entered an amplifier", [self.cell.cube_coords])
+		main.sim_crash("balls collided inside an amplifier", [self.cell.cube_coords])
 		return
 
 	var b = balls[0]
