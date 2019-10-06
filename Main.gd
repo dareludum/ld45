@@ -62,7 +62,7 @@ func _ready():
 	for i in range(-20, 20):
 		for j in range(-20, 20):
 			var cell = preload("res://scenes/Cell.tscn").instance()
-			cell.position = hex_grid.get_hex_center(Vector2(i, j))
+			cell.init(hex_grid, Vector2(i, j), HexCell.DIR_SE)
 			$BackgroundCellHolder.add_child(cell)
 	assert(OK == tick_timer.connect("timeout", self, "_game_tick"))
 	tick_timer.autostart = false
@@ -221,6 +221,10 @@ func sim_stop():
 	for child in $CellHolder.get_children():
 		if child is Source:
 			child.reset_position()
+	
+	# reset background
+	for child in $BackgroundCellHolder.get_children():
+		child.reset()
 
 	# TESTING CODE BEGIN
 
@@ -259,10 +263,15 @@ func sim_stop():
 
 func sim_crash(reason: String = "no reason", locations: Array = []) -> void:
 	print("sim_crash: %s" % reason)
-	$Background.self_modulate = BackgroundColorCrashed
 	state = SimulationState.CRASHED
 	tick_timer.stop()
 
+	$Background.self_modulate = BackgroundColorCrashed
+	for location in locations:
+		for child in $BackgroundCellHolder.get_children():
+			if child.cell.cube_coords == location:
+				child.mark_as_crashsite()
+				break
 
 # ===== End of simulation code =====
 
@@ -376,7 +385,8 @@ func _game_tick():
 	for ball in $BallHolder.get_children():
 		for intruder in balls_moving_to.get(ball.cell.cube_coords, []):
 			if ball.target_cell.cube_coords == intruder.cell.cube_coords:
-				sim_crash("edge collision between %s and %s" % [ball.cell.cube_coords, intruder.cell.cube_coords])
+				var locations = [ball.cell.cube_coords, intruder.cell.cube_coords]
+				sim_crash("edge collision between %s and %s" % locations, locations)
 
 	# apply movement (even if crashed, to pause after the collision happens)
 	for ball in $BallHolder.get_children():
@@ -390,7 +400,7 @@ func _game_tick():
 
 		var visitors = balls_moving_to[hex_pos]
 		if child is Source:
-			sim_crash("ball entered a source at %s" % hex_pos)
+			sim_crash("ball entered a source at %s" % hex_pos, [hex_pos])
 		elif child is Mirror or child is Amplifier:
 			child.balls_entered(visitors, self)
 
@@ -404,7 +414,7 @@ func _game_tick():
 			var n = len(visitors)
 			if n < 2:
 				continue
-			balls_collided(visitors)
+			balls_collided(visitors, hex_pos)
 			print("%d balls in cell %s" % [n, hex_pos])
 
 	# apply rotations
@@ -416,9 +426,9 @@ func _game_tick():
 	print("Tick")
 
 
-func balls_collided(balls):
+func balls_collided(balls, hex_pos):
 	if len(balls) > 2:
-		sim_crash("multiple balls collided")
+		sim_crash("multiple balls collided", [hex_pos])
 		return
 
 	var points = 1
