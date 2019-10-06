@@ -43,10 +43,18 @@ enum EditorTool {
 }
 
 var state = SimulationState.STOPPED
+var hi_score: int = 0
+
+# Design time - specific
 var picked_tool
 var picked_tool_direction: Vector3
+
+# Run time - specific
 var tick_timer = Timer.new()
 var interpolation_t: float = 0
+var tick: int = 0
+var score: int = 0
+
 
 func _ready():
 	hex_grid.hex_scale = Vector2(50, 50)
@@ -168,9 +176,20 @@ func sim_set_speed(speed: int):
 		assert(false)
 
 
+func sim_add_points(points: int):
+	score += points
+	$UIBar.set_points(score)
+
+
 func sim_start():
 	print("sim_start")
 	$Background.self_modulate = BackgroundColorRunning
+
+	if state == SimulationState.STOPPED:
+		tick = 0
+		score = 0
+		$UIBar.set_points(score)
+
 	state = SimulationState.RUNNING
 	_game_tick()
 	tick_timer.start()
@@ -188,6 +207,10 @@ func sim_stop():
 	$Background.self_modulate = BackgroundColorEditor
 	state = SimulationState.STOPPED
 	tick_timer.stop()
+
+	if tick >= 60 and score > hi_score:
+		hi_score = score
+		$UIBar.set_hi(hi_score)
 
 	# remove balls
 	for ball in $BallHolder.get_children():
@@ -326,6 +349,8 @@ func _game_tick():
 		tick_timer.stop()
 		return
 
+	tick += 1
+
 	# spawn new balls
 	for source in $CellHolder.get_children():
 		if source is Source:
@@ -392,10 +417,14 @@ func balls_collided(balls):
 		sim_crash("multiple balls collided")
 		return
 
+	var points = 1
 	var time_to_collision = Globals.get_animation_time(tick_timer.wait_time)
-	new_floating_text(0.5 * (balls[0].cell.cube_coords + balls[1].cell.cube_coords), time_to_collision, "+1")
+	new_floating_text(0.5 * (balls[0].cell.cube_coords + balls[1].cell.cube_coords), time_to_collision, "+" + str(points))
 	queue_free_in(time_to_collision, balls)
 	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
 	for ball in balls:
 		$BallHolder.remove_child(ball)
 		$BallToDeleteHolder.add_child(ball)
+
+	if tick <= 60:
+		sim_add_points(points)
