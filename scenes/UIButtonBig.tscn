@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://scripts/UIButton.gd" type="Script" id=1]
+[ext_resource path="res://fonts/KeyHintFont.tres" type="DynamicFont" id=2]
 
 [node name="UIButton" type="ColorRect"]
 margin_right = 50.0
@@ -22,3 +23,17 @@ margin_top = 5.0
 margin_right = 45.0
 margin_bottom = 45.0
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="KeyHint" type="ColorRect" parent="."]
+margin_left = 35.0
+margin_top = 35.0
+margin_right = 50.0
+margin_bottom = 50.0
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="TextKeyHint" type="Label" parent="KeyHint"]
+margin_left = 3.83677
+margin_top = -0.0711517
+margin_right = 17.8368
+margin_bottom = 16.9288
+custom_fonts/font = ExtResource( 2 )

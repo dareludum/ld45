@@ -4,6 +4,17 @@ var mouse_pressed_on_button = false
 
 signal click
 
+export var key_hint: String = "" setget set_key_hint, get_key_hint
+
+
+func set_key_hint(value):
+	$KeyHint/TextKeyHint.text = value
+
+
+func get_key_hint():
+	return $KeyHint/TextKeyHint.text
+
+
 func _input(event):
 	if event is InputEventMouseMotion:
 		if not mouse_pressed_on_button:
@@ -20,6 +31,7 @@ func _input(event):
 				$BackgroundHover.visible = true
 			mouse_pressed_on_button = false
 			$BackgroundHover.visible = false
+
 
 func _click():
 	emit_signal("click")
