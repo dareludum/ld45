@@ -29,6 +29,8 @@ texture = ExtResource( 2 )
 
 [node name="BallHolder" type="Node2D" parent="Area2D"]
 
+[node name="BallToDeleteHolder" type="Node2D" parent="Area2D"]
+
 [node name="FloatingTextHolder" type="Node2D" parent="Area2D"]
 
 [node name="Highlight" type="Polygon2D" parent="Area2D"]

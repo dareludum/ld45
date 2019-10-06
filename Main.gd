@@ -249,6 +249,8 @@ func _process(delta: float) -> void:
 		child.animation_process(interpolation_t)
 	for child in $BallHolder.get_children():
 		child.animation_process(interpolation_t)
+	for child in $BallToDeleteHolder.get_children():
+		child.animation_process(interpolation_t)
 
 
 func new_floating_text(cell_or_hex_pos, delay: float, text: String):
@@ -341,7 +343,7 @@ func _game_tick():
 		else:
 			balls_moving_to[ball.target_cell.cube_coords] = [ball]
 
-	# detect edge collisions (ball-ball or ball-structure)
+	# detect edge collisions (ball-ball swapping places)
 	for ball in $BallHolder.get_children():
 		for intruder in balls_moving_to.get(ball.cell.cube_coords, []):
 			if ball.target_cell.cube_coords == intruder.cell.cube_coords:
@@ -351,17 +353,7 @@ func _game_tick():
 	for ball in $BallHolder.get_children():
 		ball.move_to(ball.target_cell)
 
-	# detect cell collisions (2+ balls entering the same cell)
-	if state != SimulationState.CRASHED:
-		for hex_pos in balls_moving_to:
-			var visitors = balls_moving_to[hex_pos]
-			var n = len(visitors)
-			if n < 2:
-				continue
-			balls_collided(visitors)
-			print("%d balls in cell %s" % [n, hex_pos])
-
-	# apply structure collision rules
+	# detect ball-structure collisions
 	for child in $CellHolder.get_children():
 		var hex_pos = child.cell.cube_coords
 		if not hex_pos in balls_moving_to:
@@ -372,6 +364,19 @@ func _game_tick():
 			sim_crash("ball entered a source at %s" % hex_pos)
 		if child is Mirror:
 			child.balls_entered(visitors, self)
+
+		# consume this collision to prevent both the ball-structure and ball-ball rules from applying
+		balls_moving_to.erase(hex_pos)
+
+	# detect ball-ball collisions when entering the same cell
+	if state != SimulationState.CRASHED:
+		for hex_pos in balls_moving_to:
+			var visitors = balls_moving_to[hex_pos]
+			var n = len(visitors)
+			if n < 2:
+				continue
+			balls_collided(visitors)
+			print("%d balls in cell %s" % [n, hex_pos])
 
 	# apply rotations
 	for child in $CellHolder.get_children():
@@ -390,3 +395,7 @@ func balls_collided(balls):
 	var time_to_collision = Globals.get_animation_time(tick_timer.wait_time)
 	new_floating_text(0.5 * (balls[0].cell.cube_coords + balls[1].cell.cube_coords), time_to_collision, "+1")
 	queue_free_in(time_to_collision, balls)
+	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
+	for ball in balls:
+		$BallHolder.remove_child(ball)
+		$BallToDeleteHolder.add_child(ball)
