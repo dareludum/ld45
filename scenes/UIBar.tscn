@@ -149,21 +149,21 @@ margin_right = 212.0
 margin_bottom = 70.0
 rect_pivot_offset = Vector2( 50, 40 )
 
-[node name="ButtonRotateLeft" parent="RotationHolder" instance=ExtResource( 3 )]
+[node name="ButtonRotateRight" parent="RotationHolder" instance=ExtResource( 3 )]
 margin_left = 6.02704
 margin_top = 3.11557
 margin_right = 30.027
 margin_bottom = 27.1155
 text_hint = "Rotate the cell right (E)"
 
-[node name="KeyHint" type="ColorRect" parent="RotationHolder/ButtonRotateLeft"]
+[node name="KeyHint" type="ColorRect" parent="RotationHolder/ButtonRotateRight"]
 margin_left = 12.0
 margin_top = 12.0
 margin_right = 24.0
 margin_bottom = 24.0
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
-[node name="TextKeyHint" type="Label" parent="RotationHolder/ButtonRotateLeft/KeyHint"]
+[node name="TextKeyHint" type="Label" parent="RotationHolder/ButtonRotateRight/KeyHint"]
 margin_left = 2.67836
 margin_top = -0.36549
 margin_right = 11.6784
@@ -171,35 +171,35 @@ margin_bottom = 12.6345
 custom_fonts/font = ExtResource( 4 )
 text = "E"
 
-[node name="Sprite" type="Sprite" parent="RotationHolder/ButtonRotateLeft"]
+[node name="Sprite" type="Sprite" parent="RotationHolder/ButtonRotateRight"]
 position = Vector2( 12.0804, 12.0034 )
 rotation = 0.0523599
 scale = Vector2( 0.1, 0.1 )
 texture = ExtResource( 5 )
 
-[node name="ButtonRotateRight" parent="RotationHolder" instance=ExtResource( 3 )]
+[node name="ButtonRotateLeft" parent="RotationHolder" instance=ExtResource( 3 )]
 margin_left = 5.90494
 margin_top = 32.6605
 margin_right = 29.9049
 margin_bottom = 56.6604
 text_hint = "Rotate the cell left (Q)"
 
-[node name="KeyHint2" type="ColorRect" parent="RotationHolder/ButtonRotateRight"]
+[node name="KeyHint2" type="ColorRect" parent="RotationHolder/ButtonRotateLeft"]
 margin_left = 11.9516
 margin_top = 12.2952
 margin_right = 23.9516
 margin_bottom = 24.2952
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
-[node name="TextKeyHint" type="Label" parent="RotationHolder/ButtonRotateRight/KeyHint2"]
-margin_left = 3.7579
+[node name="TextKeyHint" type="Label" parent="RotationHolder/ButtonRotateLeft/KeyHint2"]
+margin_left = 3.17393
 margin_top = -0.338558
-margin_right = 12.7579
+margin_right = 12.1739
 margin_bottom = 12.6614
 custom_fonts/font = ExtResource( 4 )
 text = "Q"
 
-[node name="Sprite" type="Sprite" parent="RotationHolder/ButtonRotateRight"]
+[node name="Sprite" type="Sprite" parent="RotationHolder/ButtonRotateLeft"]
 position = Vector2( 12.1573, 12.3882 )
 rotation = -0.0523599
 scale = Vector2( 0.1, 0.1 )

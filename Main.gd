@@ -225,34 +225,34 @@ func sim_stop():
 	# TESTING CODE BEGIN
 
 	# balls to run around the circle, positions coupled with _ready
-	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
-	var b0 = BallScene.instance()
-	b0.init(hex_grid, HexCell.DIR_SW * 3 + HexCell.DIR_NE + HexCell.DIR_N, HexCell.DIR_SE)
-	b0.set_tier(1)
-	$BallHolder.add_child(b0)
-
-	var b1 = BallScene.instance()
-	b1.set_tier(3)
-	b1.init(hex_grid, HexCell.DIR_SE * 4, HexCell.DIR_N)
-	$BallHolder.add_child(b1)
-
-
-	# balls that collide head on
-	var b2 = BallScene.instance()
-	b2.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_N, HexCell.DIR_S)
-	b2.set_tier(2)
-	$BallHolder.add_child(b2)
-
-	var b3 = BallScene.instance()
-	b3.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_S, HexCell.DIR_N)
-	b3.set_tier(2)
-	$BallHolder.add_child(b3)
-
-	# a ball that gets amplified
-	var b4 = BallScene.instance()
-	b4.init(hex_grid, HexCell.new(HexCell.DIR_N * 2 + 3 * HexCell.DIR_NW), HexCell.DIR_S)
-	b4.set_tier(1)
-	$BallHolder.add_child(b4)
+#	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
+#	var b0 = BallScene.instance()
+#	b0.init(hex_grid, HexCell.DIR_SW * 3 + HexCell.DIR_NE + HexCell.DIR_N, HexCell.DIR_SE)
+#	b0.set_tier(1)
+#	$BallHolder.add_child(b0)
+#
+#	var b1 = BallScene.instance()
+#	b1.set_tier(3)
+#	b1.init(hex_grid, HexCell.DIR_SE * 4, HexCell.DIR_N)
+#	$BallHolder.add_child(b1)
+#
+#
+#	# balls that collide head on
+#	var b2 = BallScene.instance()
+#	b2.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_N, HexCell.DIR_S)
+#	b2.set_tier(2)
+#	$BallHolder.add_child(b2)
+#
+#	var b3 = BallScene.instance()
+#	b3.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_S, HexCell.DIR_N)
+#	b3.set_tier(2)
+#	$BallHolder.add_child(b3)
+#
+#	# a ball that gets amplified
+#	var b4 = BallScene.instance()
+#	b4.init(hex_grid, HexCell.new(HexCell.DIR_N * 2 + 3 * HexCell.DIR_NW), HexCell.DIR_S)
+#	b4.set_tier(1)
+#	$BallHolder.add_child(b4)
 
 	# TESTING CODE END
 
@@ -319,32 +319,31 @@ func _unhandled_input(event):
 				and $CollisionBox.get_viewport_rect().has_point(event.position)):
 					sim_cell_click(cell)
 
-	if event is InputEventKey:
-		if Input.is_action_just_pressed("sim_start_pause"):
-			if state == SimulationState.STOPPED || state == SimulationState.PAUSED:
-				sim_start()
-			elif state == SimulationState.RUNNING:
-				sim_pause()
-		elif Input.is_action_just_pressed("sim_stop"):
-			sim_stop()
-		elif Input.is_action_just_pressed("sim_speed_1"):
-			sim_set_speed(1)
-		elif Input.is_action_just_pressed("sim_speed_2"):
-			sim_set_speed(2)
-		elif Input.is_action_just_pressed("sim_speed_3"):
-			sim_set_speed(3)
-		elif Input.is_action_just_pressed("sim_rotate_left"):
-			sim_rotate_tool_ccw()
-		elif Input.is_action_just_pressed("sim_rotate_right"):
-			sim_rotate_tool_cw()
-		elif Input.is_action_just_pressed("sim_pick_eraser"):
-			sim_set_tool(EditorTool.ERASER)
-		elif Input.is_action_just_pressed("sim_pick_source"):
-			sim_set_tool(EditorTool.SOURCE)
-		elif Input.is_action_just_pressed("sim_pick_mirror"):
-			sim_set_tool(EditorTool.MIRROR)
-		elif Input.is_action_just_pressed("sim_pick_amplifier"):
-			sim_set_tool(EditorTool.AMPLIFIER)
+	if Input.is_action_just_pressed("sim_start_pause"):
+		if state == SimulationState.STOPPED || state == SimulationState.PAUSED:
+			sim_start()
+		elif state == SimulationState.RUNNING:
+			sim_pause()
+	elif Input.is_action_just_pressed("sim_stop"):
+		sim_stop()
+	elif Input.is_action_just_pressed("sim_speed_1"):
+		sim_set_speed(1)
+	elif Input.is_action_just_pressed("sim_speed_2"):
+		sim_set_speed(2)
+	elif Input.is_action_just_pressed("sim_speed_3"):
+		sim_set_speed(3)
+	elif Input.is_action_just_pressed("sim_rotate_left"):
+		sim_rotate_tool_ccw()
+	elif Input.is_action_just_pressed("sim_rotate_right"):
+		sim_rotate_tool_cw()
+	elif Input.is_action_just_pressed("sim_pick_eraser"):
+		sim_set_tool(EditorTool.ERASER)
+	elif Input.is_action_just_pressed("sim_pick_source"):
+		sim_set_tool(EditorTool.SOURCE)
+	elif Input.is_action_just_pressed("sim_pick_mirror"):
+		sim_set_tool(EditorTool.MIRROR)
+	elif Input.is_action_just_pressed("sim_pick_amplifier"):
+		sim_set_tool(EditorTool.AMPLIFIER)
 
 
 # Main logic function, does one simulation step
