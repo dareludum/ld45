@@ -251,7 +251,7 @@ text_hint = "Pick Mirror (S)"
 position = Vector2( 24.5394, 24.7835 )
 
 [node name="Lock" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 10 )]
-target = 10
+target = 20
 
 [node name="ButtonCellAmplifier" parent="CellHolder" instance=ExtResource( 7 )]
 margin_left = 186.474
@@ -269,4 +269,4 @@ margin_left = -0.279327
 margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
-target = 40
+target = 60
