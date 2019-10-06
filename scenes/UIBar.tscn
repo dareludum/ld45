@@ -1,4 +1,7 @@
-[gd_scene format=2]
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://scenes/UIButtonSmall.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/UIButtonBig.tscn" type="PackedScene" id=2]
 
 [node name="UIBar" type="Control"]
 anchor_right = 1.0
@@ -77,5 +80,89 @@ color = Color( 0.133333, 0.164706, 0.411765, 1 )
 [node name="SimControlHolder" type="Control" parent="."]
 margin_left = 100.0
 margin_top = 10.0
-margin_right = 180.0
+margin_right = 166.0
 margin_bottom = 70.0
+rect_pivot_offset = Vector2( 50, 40 )
+
+[node name="ButtonStartPause" parent="SimControlHolder" instance=ExtResource( 1 )]
+margin_left = 6.02704
+margin_top = 3.11557
+margin_right = 30.027
+margin_bottom = 27.1155
+
+[node name="ButtonStop" parent="SimControlHolder" instance=ExtResource( 1 )]
+margin_left = 35.7133
+margin_top = 3.11557
+margin_right = 59.7133
+margin_bottom = 27.1155
+
+[node name="ColorRect3" type="ColorRect" parent="SimControlHolder"]
+margin_left = 6.0
+margin_top = 33.0
+margin_right = 60.0
+margin_bottom = 57.0
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="Separator2" type="ColorRect" parent="."]
+margin_left = 169.837
+margin_top = 10.3663
+margin_right = 171.837
+margin_bottom = 70.3663
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="RotationHolder" type="Control" parent="."]
+margin_left = 176.0
+margin_top = 10.0
+margin_right = 212.0
+margin_bottom = 70.0
+rect_pivot_offset = Vector2( 50, 40 )
+
+[node name="ButtonRotateLeft" parent="RotationHolder" instance=ExtResource( 1 )]
+margin_left = 6.02704
+margin_top = 3.11557
+margin_right = 30.027
+margin_bottom = 27.1155
+
+[node name="ButtonRotateRight" parent="RotationHolder" instance=ExtResource( 1 )]
+margin_left = 5.90494
+margin_top = 32.6605
+margin_right = 29.9049
+margin_bottom = 56.6604
+
+[node name="Separator3" type="ColorRect" parent="."]
+margin_left = 215.831
+margin_top = 10.1928
+margin_right = 217.831
+margin_bottom = 70.1928
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="CellHolder" type="Control" parent="."]
+margin_left = 222.0
+margin_top = 10.0
+margin_right = 354.0
+margin_bottom = 70.0
+rect_pivot_offset = Vector2( 50, 40 )
+
+[node name="ButtonCellEraser" parent="CellHolder" instance=ExtResource( 2 )]
+margin_left = 5.98224
+margin_top = 5.37181
+margin_right = 55.9822
+margin_bottom = 55.3718
+
+[node name="ButtonCellSource" parent="CellHolder" instance=ExtResource( 2 )]
+margin_left = 66.4151
+margin_top = 4.76137
+margin_right = 116.415
+margin_bottom = 54.7614
+
+[node name="ButtonCellMirror" parent="CellHolder" instance=ExtResource( 2 )]
+margin_left = 126.237
+margin_top = 5.12763
+margin_right = 176.237
+margin_bottom = 55.1276
+
+[node name="ButtonCellAmplifier" parent="CellHolder" instance=ExtResource( 2 )]
+margin_left = 186.182
+margin_top = 5.49389
+margin_right = 236.182
+margin_bottom = 55.4939
