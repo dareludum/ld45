@@ -1,6 +1,13 @@
 # Script to attach to a node which represents a hex grid
 extends Node2D
 
+const BackgroundColorEditor = Color("#49518f")
+const BackgroundColorRunning = Color("#49518f")
+const BackgroundColorPaused = Color("#49518f")
+# const BackgroundColorRunning = Color("#457e8f")
+# const BackgroundColorPaused = Color("#8f8e45")
+const BackgroundColorCrashed = Color("#8f4572")
+
 const Globals = preload("res://scripts/Globals.gd")
 const HexCell = preload("res://HexCell.gd")
 const HexGrid = preload("res://HexGrid.gd")
@@ -145,9 +152,7 @@ func sim_set_speed(speed: int):
 
 func sim_start():
 	print("sim_start")
-	$Status.text = "Status: started"
-	$Status.modulate = Color.green
-
+	$Background.self_modulate = BackgroundColorRunning
 	state = SimulationState.RUNNING
 	_game_tick()
 	tick_timer.start()
@@ -155,18 +160,14 @@ func sim_start():
 
 func sim_pause():
 	print("sim_pause")
-	$Status.text = "Status: paused"
-	$Status.modulate = Color.orange
-
+	$Background.self_modulate = BackgroundColorPaused
 	state = SimulationState.PAUSED
 	tick_timer.stop()
 
 
 func sim_stop():
 	print("sim_stop")
-	$Status.text = "Status: stopped"
-	$Status.modulate = Color.white
-
+	$Background.self_modulate = BackgroundColorEditor
 	state = SimulationState.STOPPED
 	tick_timer.stop()
 
@@ -211,9 +212,7 @@ func sim_stop():
 
 func sim_crash(reason: String = "no reason") -> void:
 	print("sim_crash: %s" % reason)
-	$Status.text = "Status: crashed"
-	$Status.modulate = Color.red
-
+	$Background.self_modulate = BackgroundColorCrashed
 	state = SimulationState.CRASHED
 	tick_timer.stop()
 
