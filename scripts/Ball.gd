@@ -1,6 +1,6 @@
 extends BaseCell
 
-var tier: int = 0
+var tier: int
 var target_cell: HexCell  # scratchpad for Main, equal to cell.cube_coords outside of _game_tick
 
 var interpolation_pos_from: Vector2
@@ -10,6 +10,7 @@ const CI_B = Vector2(0, 1)
 
 
 func _on_init():
+	set_tier(1)
 	move_to(self.cell)
 
 
@@ -20,13 +21,13 @@ func set_tier(tier_, ui_change_delay: float = 0.0):
 		yield(get_tree().create_timer(ui_change_delay), "timeout")
 	var sprite = $Sprite
 	if tier == 1:
-		sprite.modulate = Globals.BALL_RED
+		sprite.modulate = Globals.BALL_YELLOW
 		sprite.scale = Globals.BALL_SMALL
 	elif tier == 2:  # orange
 		sprite.modulate = Globals.BALL_ORANGE
 		sprite.scale = Globals.BALL_MEDIUM
 	elif tier == 3:  # red
-		sprite.modulate = Globals.BALL_YELLOW
+		sprite.modulate = Globals.BALL_RED
 		sprite.scale = Globals.BALL_LARGE
 	else:
 		assert(false)
