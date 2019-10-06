@@ -68,7 +68,7 @@ func _ready():
 			i += 1
 
 	var amplifier = AmplifierScene.instance()
-	amplifier.init(hex_grid, HexCell.new(Vector3.ZERO), HexCell.DIR_SE)
+	amplifier.init(hex_grid, 3 * HexCell.DIR_NW, HexCell.DIR_SE)
 	$CellHolder.add_child(amplifier)
 
 	# TESTING CODE END
@@ -104,10 +104,8 @@ func sim_stop():
 	tick_timer.stop()
 
 	# remove balls
-	var to_delete = $BallHolder.get_children()
-	for child in to_delete:
-		remove_child(child)
-		child.queue_free()
+	for ball in $BallHolder.get_children():
+		ball.queue_free()
 
 	# reset rotations
 	for child in $CellHolder.get_children():
@@ -126,9 +124,20 @@ func sim_stop():
 	b1.init(hex_grid, HexCell.DIR_SE * 4, HexCell.DIR_N)
 	$BallHolder.add_child(b1)
 
-	var amp_ball = Ball1.instance()
-	amp_ball.init(hex_grid, HexCell.new(HexCell.DIR_N + HexCell.DIR_N), HexCell.DIR_S)
-	$BallHolder.add_child(amp_ball)
+
+	# balls that collide head on
+	var b2 = Ball1.instance()
+	b2.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_N, HexCell.DIR_S)
+	$BallHolder.add_child(b2)
+
+	var b3 = Ball1.instance()
+	b3.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_S, HexCell.DIR_N)
+	$BallHolder.add_child(b3)
+
+	# a ball that gets amplified
+	var b4 = Ball1.instance()
+	b4.init(hex_grid, HexCell.new(HexCell.DIR_N * 2 + 3 * HexCell.DIR_NW), HexCell.DIR_S)
+	$BallHolder.add_child(b4)
 
 	# TESTING CODE END
 
@@ -143,7 +152,7 @@ func sim_crash(reason: String = "no reason") -> void:
 
 
 func _process(delta: float) -> void:
-	interpolation_t = min(1.0, interpolation_t + 2 * delta * (1.0 / Globals.TICK_TIME))
+	interpolation_t = min(1.0, interpolation_t + delta / Globals.ANIMATION_TIME)
 	for child in $CellHolder.get_children():
 		child.animation_process(interpolation_t)
 	for child in $BallHolder.get_children():
@@ -214,6 +223,7 @@ func _game_tick():
 			var n = len(visitors)
 			if n < 2:
 				continue
+			balls_collided(visitors)
 			print("%d balls in cell %s" % [n, hex_pos])
 
 	# apply structure collision rules
@@ -235,3 +245,13 @@ func _game_tick():
 
 	interpolation_t = 0.0
 	print("Tick")
+
+
+func balls_collided(balls):
+	if len(balls) > 2:
+		sim_crash("multiple balls collided")
+		return
+
+	print("+1 energy")
+	balls[0].queue_free()
+	balls[1].queue_free()
