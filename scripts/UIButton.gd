@@ -20,6 +20,14 @@ func get_key_hint():
 	return $KeyHint/TextKeyHint.text
 
 
+func set_uses_count(count: int):
+	if count == -1:
+		$UsesLeft.visible = false
+		return
+	$UsesLeft.visible = true
+	$UsesLeft/TextUsesLeft.text = str(count)
+
+
 func _input(event):
 	if event is InputEventMouseMotion:
 		if not mouse_pressed_on_button:

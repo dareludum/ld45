@@ -45,6 +45,14 @@ func set_hi(points: int):
 			lock.visible = false
 
 
+func set_source_uses_count(count: int):
+	$CellHolder/ButtonCellSource.set_uses_count(count)
+
+
+func set_amplifier_uses_count(count: int):
+	$CellHolder/ButtonCellAmplifier.set_uses_count(count)
+
+
 func simulate_input_event(name):
 	var event = InputEventAction.new()
 	event.action = name

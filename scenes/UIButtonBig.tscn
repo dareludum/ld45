@@ -37,3 +37,18 @@ margin_top = -0.0711517
 margin_right = 17.8368
 margin_bottom = 16.9288
 custom_fonts/font = ExtResource( 2 )
+
+[node name="UsesLeft" type="ColorRect" parent="."]
+visible = false
+margin_left = 0.0193672
+margin_top = 35.0
+margin_right = 15.0194
+margin_bottom = 50.0
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="TextUsesLeft" type="Label" parent="UsesLeft"]
+margin_left = 4.75024
+margin_top = -0.0711517
+margin_right = 18.7503
+margin_bottom = 16.9288
+custom_fonts/font = ExtResource( 2 )

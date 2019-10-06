@@ -48,13 +48,21 @@ const TOOL_UNLOCK_TARGETS = {
 	EditorTool.AMPLIFIER: 40,
 }
 
+const TOOL_USES_MAX = {
+	EditorTool.SOURCE: 2,
+	EditorTool.AMPLIFIER: 1,
+}
+
 var state = SimulationState.STOPPED
 var hi_score: int = 0
 
 # Design time - specific
-const DEBUG_ALL_TOOLS_UNLOCKED = true # Does not show buttons
 var picked_tool
 var picked_tool_direction: Vector3
+var placed_cells_per_tool = {
+	EditorTool.SOURCE: 0,
+	EditorTool.AMPLIFIER: 0,
+}
 
 # Run time - specific
 var tick_timer = Timer.new()
@@ -87,26 +95,30 @@ func _ready():
 #	mirror.init(hex_grid, Vector3(0, -1, 1), HexCell.DIR_SE)
 #	$CellHolder.add_child(mirror)
 
-	for circle in [  # the ball positions in sim_stop are coupled with this
-			{center = HexCell.DIR_SW * 3, radius = 2},
-			{center = HexCell.DIR_SE * 3, radius = 1},
-		]:
-		var dir = HexCell.DIR_SE
-		var pos = circle.radius * HexCell.DIR_S
-		var i = 0
-		while i < 6:
-			var mirror = MirrorScene.instance()
-			mirror.init(hex_grid, circle.center + pos, dir)
-			$CellHolder.add_child(mirror)
-			pos -= circle.radius * dir
-			dir = mirror.cell.rotate_direction_cw(dir)
-			i += 1
-
-	var amplifier = AmplifierScene.instance()
-	amplifier.init(hex_grid, 3 * HexCell.DIR_NW, HexCell.DIR_SE)
-	$CellHolder.add_child(amplifier)
+#	for circle in [  # the ball positions in sim_stop are coupled with this
+#			{center = HexCell.DIR_SW * 3, radius = 2},
+#			{center = HexCell.DIR_SE * 3, radius = 1},
+#		]:
+#		var dir = HexCell.DIR_SE
+#		var pos = circle.radius * HexCell.DIR_S
+#		var i = 0
+#		while i < 6:
+#			var mirror = MirrorScene.instance()
+#			mirror.init(hex_grid, circle.center + pos, dir)
+#			$CellHolder.add_child(mirror)
+#			pos -= circle.radius * dir
+#			dir = mirror.cell.rotate_direction_cw(dir)
+#			i += 1
+#
+#	var amplifier = AmplifierScene.instance()
+#	amplifier.init(hex_grid, 3 * HexCell.DIR_NW, HexCell.DIR_SE)
+#	$CellHolder.add_child(amplifier)
 
 	# TESTING CODE END
+
+	$UIBar.set_hi(hi_score)
+	$UIBar.set_source_uses_count(TOOL_USES_MAX[EditorTool.SOURCE])
+	$UIBar.set_amplifier_uses_count(TOOL_USES_MAX[EditorTool.AMPLIFIER])
 
 	sim_set_speed(1)
 	sim_set_tool(EditorTool.ERASER)
@@ -117,9 +129,6 @@ func _ready():
 
 
 func sim_get_tool_cell(cell):
-	if (not DEBUG_ALL_TOOLS_UNLOCKED and hi_score < TOOL_UNLOCK_TARGETS[picked_tool]):
-		return
-
 	if picked_tool == EditorTool.ERASER:
 		return null
 
@@ -141,10 +150,17 @@ func sim_get_tool_cell(cell):
 func sim_update_tool_highlight():
 	for child in $Highlight/ToolHolder.get_children():
 		child.queue_free()
-	$Highlight/ToolHolder.add_child(sim_get_tool_cell(HexCell.new(Vector3.ZERO)))
+	
+	var tool_ = sim_get_tool_cell(HexCell.new(Vector3.ZERO))
+	if picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]:
+		tool_.get_node("Sprite").self_modulate = Color.orangered
+	$Highlight/ToolHolder.add_child(tool_)
 
 
 func sim_set_tool(tool_):
+	if (hi_score < TOOL_UNLOCK_TARGETS[tool_]):
+		return
+
 	picked_tool = tool_
 	picked_tool_direction = HexCell.DIR_SE
 	sim_update_tool_highlight()
@@ -160,19 +176,48 @@ func sim_rotate_tool_ccw():
 	sim_update_tool_highlight()
 
 
+func sim_update_tool_uses(tool_, modifier: int):
+	# Modifier is -1 when a cell is placed, +1 when it's erased
+	var new_count = placed_cells_per_tool[tool_] - modifier
+	var uses_left = TOOL_USES_MAX[tool_] - new_count
+	if tool_ == EditorTool.SOURCE:
+		$UIBar.set_source_uses_count(uses_left)
+	elif tool_ == EditorTool.AMPLIFIER:
+		$UIBar.set_amplifier_uses_count(uses_left)
+	else:
+		assert(false)
+	placed_cells_per_tool[tool_] = new_count
+	sim_update_tool_highlight()
+
+
 func sim_cell_click(cell):
 	if state != SimulationState.STOPPED:
 		return
 
+	var current_cell = null
 	for child in $CellHolder.get_children():
 		if child.cell.cube_coords == cell.cube_coords:
-			child.queue_free()
+			current_cell = child
+
+	# This condition allows rotating a placed Source in place even if no more usages
+	if (picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]
+		and not (current_cell != null and current_cell is Source and picked_tool == EditorTool.SOURCE)):
+			return
+
+	if current_cell != null:
+		if current_cell is Source:
+			sim_update_tool_uses(EditorTool.SOURCE, +1)
+		elif current_cell is Amplifier:
+			sim_update_tool_uses(EditorTool.AMPLIFIER, +1)
+		current_cell.queue_free()
 
 	if picked_tool == EditorTool.ERASER:
 		return
 
 	var new_cell = sim_get_tool_cell(cell)
 	$CellHolder.add_child(new_cell)
+	if picked_tool == EditorTool.SOURCE or picked_tool == EditorTool.AMPLIFIER:
+		sim_update_tool_uses(picked_tool, -1)
 
 
 # ===== Simulation Running =====
