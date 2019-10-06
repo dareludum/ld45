@@ -18,9 +18,8 @@ func _input(event):
 				if mouse_pressed_on_button:
 					_click()
 				$BackgroundHover.visible = true
-			else:
-				mouse_pressed_on_button = false
-				$BackgroundHover.visible = false
+			mouse_pressed_on_button = false
+			$BackgroundHover.visible = false
 
 func _click():
 	emit_signal("click")
