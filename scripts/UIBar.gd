@@ -28,6 +28,18 @@ func _enter_tree():
 	assert(OK == $CellHolder/ButtonCellAmplifier.connect("mouse_enter", self, "_on_button_mouse_enter"))
 	assert(OK == $CellHolder/ButtonCellAmplifier.connect("mouse_leave", self, "_on_button_mouse_leave"))
 	assert(OK == $CellHolder/ButtonCellAmplifier.connect("click", self, "_on_pick_amplifier_click"))
+	assert(OK == $CellHolder/ButtonCellFlipFlop.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $CellHolder/ButtonCellFlipFlop.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $CellHolder/ButtonCellFlipFlop.connect("click", self, "_on_pick_flipflop_click"))
+	assert(OK == $CellHolder/ButtonCellReactor3.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $CellHolder/ButtonCellReactor3.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $CellHolder/ButtonCellReactor3.connect("click", self, "_on_pick_reactor3_click"))
+	assert(OK == $CellHolder/ButtonCellY.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $CellHolder/ButtonCellY.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $CellHolder/ButtonCellY.connect("click", self, "_on_pick_ycomb_click"))
+	assert(OK == $CellHolder/ButtonCellReactor6.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $CellHolder/ButtonCellReactor6.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $CellHolder/ButtonCellReactor6.connect("click", self, "_on_pick_reactor6_click"))
 
 
 func set_points(points: int):
@@ -39,6 +51,10 @@ func set_hi(points: int):
 	var locks = [
 		$CellHolder/ButtonCellMirror/Lock,
 		$CellHolder/ButtonCellAmplifier/Lock,
+		$CellHolder/ButtonCellFlipFlop/Lock,
+		$CellHolder/ButtonCellReactor3/Lock,
+		$CellHolder/ButtonCellY/Lock,
+		$CellHolder/ButtonCellReactor6/Lock,
 	]
 	for lock in locks:
 		if points >= lock.target:
@@ -105,3 +121,19 @@ func _on_pick_mirror_click():
 
 func _on_pick_amplifier_click():
 	simulate_input_event("sim_pick_amplifier")
+
+
+func _on_pick_flipflop_click():
+	simulate_input_event("sim_pick_flipflop")
+
+
+func _on_pick_reactor3_click():
+	simulate_input_event("sim_pick_reactor3")
+
+
+func _on_pick_ycomb_click():
+	simulate_input_event("sim_pick_ycomb")
+
+
+func _on_pick_reactor6_click():
+	simulate_input_event("sim_pick_reactor6")

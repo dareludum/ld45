@@ -19,6 +19,11 @@ const SourceScene = preload("res://scenes/Source.tscn")
 const BallScene = preload("res://scenes/Ball.tscn")
 const MirrorScene = preload("res://scenes/Mirror.tscn")
 const AmplifierScene = preload("res://scenes/Amplifier.tscn")
+const FlipFlopScene = preload("res://scenes/FlipFlop.tscn")
+const Reactor3Scene = preload("res://scenes/Reactor3.tscn")
+const YCombScene = preload("res://scenes/Y.tscn")
+const Reactor6Scene = preload("res://scenes/Reactor6.tscn")
+
 const FloatingTextScene = preload("res://scenes/FloatingText.tscn")
 
 var hex_grid = HexGrid.new()
@@ -39,6 +44,10 @@ enum EditorTool {
 	SOURCE,
 	MIRROR,
 	AMPLIFIER,
+	FLIPFLOP,
+	REACTOR3,
+	YCOMB,
+	REACTOR6,
 }
 
 const TOOL_UNLOCK_TARGETS = {
@@ -46,6 +55,10 @@ const TOOL_UNLOCK_TARGETS = {
 	EditorTool.SOURCE: 0,
 	EditorTool.MIRROR: 10,
 	EditorTool.AMPLIFIER: 40,
+	EditorTool.FLIPFLOP: 100,
+	EditorTool.REACTOR3: 100, # TODO
+	EditorTool.YCOMB: 100, # TODO
+	EditorTool.REACTOR6: 100, # TODO
 }
 
 const TOOL_USES_MAX = {
@@ -54,7 +67,7 @@ const TOOL_USES_MAX = {
 }
 
 var state = SimulationState.STOPPED
-var hi_score: int = 0
+var hi_score: int = 100
 
 # Design time - specific
 var picked_tool
@@ -136,6 +149,14 @@ func sim_get_tool_cell(cell):
 		new_cell = MirrorScene.instance()
 	elif picked_tool == EditorTool.AMPLIFIER:
 		new_cell = AmplifierScene.instance()
+	elif picked_tool == EditorTool.FLIPFLOP:
+		new_cell = FlipFlopScene.instance()
+	elif picked_tool == EditorTool.REACTOR3:
+		new_cell = Reactor3Scene.instance()
+	elif picked_tool == EditorTool.YCOMB:
+		new_cell = YCombScene.instance()
+	elif picked_tool == EditorTool.REACTOR6:
+		new_cell = Reactor6Scene.instance()
 	else:
 		assert(false)
 
@@ -430,6 +451,14 @@ func _unhandled_input(event):
 		sim_set_tool(EditorTool.MIRROR)
 	elif Input.is_action_just_pressed("sim_pick_amplifier"):
 		sim_set_tool(EditorTool.AMPLIFIER)
+	elif Input.is_action_just_pressed("sim_pick_flipflop"):
+		sim_set_tool(EditorTool.FLIPFLOP)
+	elif Input.is_action_just_pressed("sim_pick_reactor3"):
+		sim_set_tool(EditorTool.REACTOR3)
+	elif Input.is_action_just_pressed("sim_pick_ycomb"):
+		sim_set_tool(EditorTool.YCOMB)
+	elif Input.is_action_just_pressed("sim_pick_reactor6"):
+		sim_set_tool(EditorTool.REACTOR6)
 
 
 # Main logic function, does one simulation step

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://scripts/UIBar.gd" type="Script" id=1]
 [ext_resource path="res://fonts/HintFont.tres" type="DynamicFont" id=2]
@@ -11,6 +11,10 @@
 [ext_resource path="res://scenes/Mirror.tscn" type="PackedScene" id=9]
 [ext_resource path="res://scenes/ButtonLock.tscn" type="PackedScene" id=10]
 [ext_resource path="res://scenes/Amplifier.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scenes/FlipFlop.tscn" type="PackedScene" id=12]
+[ext_resource path="res://scenes/Reactor3.tscn" type="PackedScene" id=13]
+[ext_resource path="res://scenes/Y.tscn" type="PackedScene" id=14]
+[ext_resource path="res://scenes/Reactor6.tscn" type="PackedScene" id=15]
 
 [node name="UIBar" type="Control"]
 anchor_right = 1.0
@@ -270,3 +274,82 @@ margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
 target = 60
+
+[node name="ButtonCellFlipFlop" parent="CellHolder" instance=ExtResource( 7 )]
+margin_left = 245.616
+margin_top = 4.7973
+margin_right = 295.616
+margin_bottom = 54.7973
+key_hint = "F"
+text_hint = "Pick Flip-flop (F)"
+
+[node name="FlipFlop" parent="CellHolder/ButtonCellFlipFlop" instance=ExtResource( 12 )]
+position = Vector2( 24.8251, 24.6503 )
+
+[node name="Lock" parent="CellHolder/ButtonCellFlipFlop" instance=ExtResource( 10 )]
+margin_left = -0.279327
+margin_top = -0.317152
+margin_right = 49.7207
+margin_bottom = 49.6828
+target = 100
+
+[node name="ButtonCellReactor3" parent="CellHolder" instance=ExtResource( 7 )]
+margin_left = 305.966
+margin_top = 5.19969
+margin_right = 355.966
+margin_bottom = 55.1997
+key_hint = "Z"
+text_hint = "Pick 3-Reactor (Z)"
+
+[node name="Reactor3" parent="CellHolder/ButtonCellReactor3" instance=ExtResource( 13 )]
+position = Vector2( 24.9126, 24.8078 )
+
+[node name="Lock" parent="CellHolder/ButtonCellReactor3" instance=ExtResource( 10 )]
+margin_left = -0.279327
+margin_top = -0.317152
+margin_right = 49.7207
+margin_bottom = 49.6828
+target = 100
+
+[node name="ButtonCellY" parent="CellHolder" instance=ExtResource( 7 )]
+margin_left = 366.044
+margin_top = 5.22953
+margin_right = 416.044
+margin_bottom = 55.2295
+key_hint = "X"
+text_hint = "Pick Y-Combinator (X)"
+
+[node name="Y" parent="CellHolder/ButtonCellY" instance=ExtResource( 14 )]
+position = Vector2( 25.1815, 24.5821 )
+
+[node name="Lock" parent="CellHolder/ButtonCellY" instance=ExtResource( 10 )]
+margin_left = -0.279327
+margin_top = -0.317152
+margin_right = 49.7207
+margin_bottom = 49.6828
+target = 100
+
+[node name="ButtonCellReactor6" parent="CellHolder" instance=ExtResource( 7 )]
+margin_left = 426.125
+margin_top = 5.33337
+margin_right = 476.125
+margin_bottom = 55.3334
+key_hint = "C"
+text_hint = "Pick 6-Reactor (C)"
+
+[node name="Reactor6" parent="CellHolder/ButtonCellReactor6" instance=ExtResource( 15 )]
+position = Vector2( 25.1816, 24.7319 )
+
+[node name="Lock" parent="CellHolder/ButtonCellReactor6" instance=ExtResource( 10 )]
+margin_left = -0.279327
+margin_top = -0.317152
+margin_right = 49.7207
+margin_bottom = 49.6828
+target = 100
+
+[node name="Separator4" type="ColorRect" parent="."]
+margin_left = 708.102
+margin_top = 10.1642
+margin_right = 710.102
+margin_bottom = 70.1642
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
