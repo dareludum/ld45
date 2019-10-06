@@ -171,14 +171,22 @@ func _process(delta: float) -> void:
 		child.animation_process(interpolation_t)
 
 
-func new_floating_text(cell_or_hex_pos, text: String):
+func new_floating_text(cell_or_hex_pos, delay: float, text: String):
 	var ft = FloatingTextScene.instance()
 	if cell_or_hex_pos is HexCell:
 		ft.position = hex_grid.get_hex_center(cell_or_hex_pos.cube_coords)
 	else:
 		ft.position = hex_grid.get_hex_center(cell_or_hex_pos)
 	$FloatingTextHolder.add_child(ft)
-	ft.start(text, Globals.get_animation_time(tick_timer.wait_time))
+	ft.start(text, delay)
+
+
+# this executes asynchronously, i.e. the call returns immediately,
+# but the coroutine keeps running on its own
+func queue_free_in(delay: float, nodes: Array):
+	yield(get_tree().create_timer(delay), "timeout")
+	for node in nodes:
+		node.queue_free()
 
 
 func _unhandled_input(event):
@@ -280,6 +288,6 @@ func balls_collided(balls):
 		sim_crash("multiple balls collided")
 		return
 
-	new_floating_text(0.5 * (balls[0].cell.cube_coords + balls[1].cell.cube_coords), "+1")
-	balls[0].queue_free()
-	balls[1].queue_free()
+	var time_to_collision = Globals.get_animation_time(tick_timer.wait_time)
+	new_floating_text(0.5 * (balls[0].cell.cube_coords + balls[1].cell.cube_coords), time_to_collision, "+1")
+	queue_free_in(time_to_collision, balls)
