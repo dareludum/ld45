@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://images/fill.png" type="Texture" id=2]
 [ext_resource path="res://scenes/UIBar.tscn" type="PackedScene" id=3]
+[ext_resource path="res://fonts/HintFont.tres" type="DynamicFont" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 512, 260 )
@@ -19,8 +20,8 @@ shape = SubResource( 1 )
 
 [node name="Background" type="Sprite" parent="Area2D"]
 self_modulate = Color( 0.286275, 0.317647, 0.560784, 1 )
-position = Vector2( 0.831848, 1.22691 )
-scale = Vector2( 102.243, 59.885 )
+position = Vector2( 0.831776, 4.09084 )
+scale = Vector2( 109.403, 66.1857 )
 texture = ExtResource( 2 )
 
 [node name="BackgroundCellHolder" type="Node2D" parent="Area2D"]
@@ -38,6 +39,7 @@ color = Color( 1, 1, 1, 0.12549 )
 polygon = PoolVector2Array( -12.5, 21.6506, 12.5, 21.6506, 25, 0, 12.5, -21.6506, -12.5, -21.6506, -25, 0 )
 
 [node name="Label" type="Label" parent="Area2D/Highlight"]
+visible = false
 margin_left = 5.0
 margin_top = -39.0
 margin_right = 52.0
@@ -45,6 +47,7 @@ margin_bottom = -25.0
 text = "SCREEN"
 
 [node name="AreaCoords" type="Label" parent="Area2D/Highlight"]
+visible = false
 margin_left = 55.0
 margin_top = -39.0
 margin_right = 105.0
@@ -52,6 +55,7 @@ margin_bottom = -25.0
 text = "SCREEN"
 
 [node name="Label2" type="Label" parent="Area2D/Highlight"]
+visible = false
 margin_left = 25.0
 margin_top = -19.0
 margin_right = 56.0
@@ -59,6 +63,7 @@ margin_bottom = -5.0
 text = "HEX"
 
 [node name="HexCoords" type="Label" parent="Area2D/Highlight"]
+visible = false
 margin_left = 55.0
 margin_top = -19.0
 margin_right = 105.0
@@ -72,3 +77,26 @@ margin_left = -512.248
 margin_top = -300.122
 margin_right = -512.248
 margin_bottom = -300.122
+
+[node name="StatusBar" type="ColorRect" parent="Area2D"]
+visible = false
+modulate = Color( 1, 1, 1, 0.752941 )
+margin_left = -512.0
+margin_top = 265.0
+margin_right = -234.0
+margin_bottom = 300.0
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="Background" type="ColorRect" parent="Area2D/StatusBar"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 273.0
+margin_bottom = 30.0
+color = Color( 0.270588, 0.301961, 0.564706, 1 )
+
+[node name="TextStatus" type="Label" parent="Area2D/StatusBar"]
+margin_left = 13.0
+margin_top = 9.0
+margin_right = 218.0
+margin_bottom = 26.0
+custom_fonts/font = ExtResource( 4 )

@@ -244,6 +244,7 @@ func sim_start():
 		tick = 0
 		score = 0
 		$UIBar.set_points(score)
+		$StatusBar.visible = true
 
 	state = SimulationState.RUNNING
 	_game_tick()
@@ -259,9 +260,11 @@ func sim_pause():
 
 func sim_stop():
 	print("sim_stop")
-	$Background.self_modulate = BackgroundColorEditor
-	state = SimulationState.STOPPED
 	tick_timer.stop()
+	state = SimulationState.STOPPED
+
+	$Background.self_modulate = BackgroundColorEditor
+	$StatusBar.visible = false
 
 	if tick >= Globals.TARGET_ITERATIONS_COUNT and score > hi_score:
 		hi_score = score
@@ -435,6 +438,16 @@ func _game_tick():
 		return
 
 	tick += 1
+	if tick <= Globals.TARGET_ITERATIONS_COUNT:
+		$StatusBar/TextStatus.text = "Validating iteration %d/%d..." % [tick, Globals.TARGET_ITERATIONS_COUNT]
+		$StatusBar/TextStatus.self_modulate = Color.white
+	elif tick == Globals.TARGET_ITERATIONS_COUNT + 1:
+		if score != 0:
+			$StatusBar/TextStatus.text = "Validated! Stop simulation to claim %d points" % score
+		else:
+			$StatusBar/TextStatus.text = "Validated! Zero score - try colliding the balls"
+		$StatusBar/TextStatus.self_modulate = Color.greenyellow
+
 	var ball_holder = $BallHolder
 
 	# delete balls that are out of the simulation area
