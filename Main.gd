@@ -84,9 +84,6 @@ func _ready():
 
 	# TESTING CODE BEGIN
 
-	if DEBUG_ALL_TOOLS_UNLOCKED:
-		$UIBar.set_hi(9999)
-
 #	var source = preload("res://scenes/Source.tscn").instance()
 #	source.init(hex_grid, Vector3(-2, 1, 1), HexCell.DIR_SE)
 #	$CellHolder.add_child(source)
