@@ -1,7 +1,29 @@
 extends BaseCell
 
 var target_cell: HexCell  # scratchpad for Main, equal to cell.cube_coords outside of _game_tick
-var tier = 1
+
+var tier setget tier_set, tier_get
+var _tier = 0
+
+func tier_set(new_value):
+	if new_value == _tier:
+		return
+	_tier = new_value
+	var sprite = $Sprite
+	if _tier == 1:
+		sprite.modulate = Globals.BALL_RED
+		sprite.scale = Globals.BALL_SMALL
+	elif _tier == 2:  # orange
+		sprite.modulate = Globals.BALL_ORANGE
+		sprite.scale = Globals.BALL_MEDIUM
+	elif _tier == 3:  # red
+		sprite.modulate = Globals.BALL_YELLOW
+		sprite.scale = Globals.BALL_LARGE
+	else:
+		assert(false)
+
+func tier_get():
+    return _tier
 
 var interpolation_pos_from: Vector2
 var interpolation_pos_to: Vector2

@@ -16,8 +16,8 @@ const Ball = preload("res://scripts/Ball.gd")
 var Source = load("res://scripts/Source.gd")
 var Mirror = load("res://scripts/Mirror.gd")
 
-const Ball1 = preload("res://scenes/Ball1.tscn")
 const SourceScene = preload("res://scenes/Source.tscn")
+const BallScene = preload("res://scenes/Ball.tscn")
 const MirrorScene = preload("res://scenes/Mirror.tscn")
 const AmplifierScene = preload("res://scenes/Amplifier.tscn")
 const FloatingTextScene = preload("res://scenes/FloatingText.tscn")
@@ -202,27 +202,32 @@ func sim_stop():
 
 	# balls to run around the circle, positions coupled with _ready
 	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
-	var b0 = Ball1.instance()
+	var b0 = BallScene.instance()
 	b0.init(hex_grid, HexCell.DIR_SW * 3 + HexCell.DIR_NE + HexCell.DIR_N, HexCell.DIR_SE)
+	b0.tier = 1
 	$BallHolder.add_child(b0)
 
-	var b1 = Ball1.instance()
+	var b1 = BallScene.instance()
+	b1.tier = 3
 	b1.init(hex_grid, HexCell.DIR_SE * 4, HexCell.DIR_N)
 	$BallHolder.add_child(b1)
 
 
 	# balls that collide head on
-	var b2 = Ball1.instance()
+	var b2 = BallScene.instance()
 	b2.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_N, HexCell.DIR_S)
+	b2.tier = 2
 	$BallHolder.add_child(b2)
 
-	var b3 = Ball1.instance()
+	var b3 = BallScene.instance()
 	b3.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_S, HexCell.DIR_N)
+	b3.tier = 2
 	$BallHolder.add_child(b3)
 
 	# a ball that gets amplified
-	var b4 = Ball1.instance()
+	var b4 = BallScene.instance()
 	b4.init(hex_grid, HexCell.new(HexCell.DIR_N * 2 + 3 * HexCell.DIR_NW), HexCell.DIR_S)
+	b4.tier = 1
 	$BallHolder.add_child(b4)
 
 	# TESTING CODE END
@@ -322,7 +327,7 @@ func _game_tick():
 	# spawn new balls
 	for source in $CellHolder.get_children():
 		if source is Source:
-			var b = Ball1.instance()
+			var b = BallScene.instance()
 			b.init(hex_grid, HexCell.new(source.cell), source.direction)
 			$BallHolder.add_child(b)
 
