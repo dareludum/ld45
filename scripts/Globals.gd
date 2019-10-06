@@ -6,6 +6,8 @@ const TICK_TIME: float = 0.5
 const TICK_TIME_FAST: float = 0.25
 const TICK_TIME_FASTEST: float = 0.1
 
+const MAX_BALL_TIER = 3
+
 const BALL_RED = Color(0.9, 0.15, 0.15, 1)
 const BALL_ORANGE = Color(0.9, 0.45, 0.1, 1)
 const BALL_YELLOW = Color(1, 0.85, 0, 1)

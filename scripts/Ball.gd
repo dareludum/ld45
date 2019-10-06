@@ -1,29 +1,7 @@
 extends BaseCell
 
+var tier: int = 0
 var target_cell: HexCell  # scratchpad for Main, equal to cell.cube_coords outside of _game_tick
-
-var tier setget tier_set, tier_get
-var _tier = 0
-
-func tier_set(new_value):
-	if new_value == _tier:
-		return
-	_tier = new_value
-	var sprite = $Sprite
-	if _tier == 1:
-		sprite.modulate = Globals.BALL_RED
-		sprite.scale = Globals.BALL_SMALL
-	elif _tier == 2:  # orange
-		sprite.modulate = Globals.BALL_ORANGE
-		sprite.scale = Globals.BALL_MEDIUM
-	elif _tier == 3:  # red
-		sprite.modulate = Globals.BALL_YELLOW
-		sprite.scale = Globals.BALL_LARGE
-	else:
-		assert(false)
-
-func tier_get():
-    return _tier
 
 var interpolation_pos_from: Vector2
 var interpolation_pos_to: Vector2
@@ -34,6 +12,24 @@ const CI_B = Vector2(0, 1)
 func _on_init():
 	move_to(self.cell)
 
+
+func set_tier(tier_, ui_change_delay: float = 0.0):
+	assert(0 < tier_ and tier_ <= Globals.MAX_BALL_TIER)
+	tier = tier_
+	if ui_change_delay > 0.0:
+		yield(get_tree().create_timer(ui_change_delay), "timeout")
+	var sprite = $Sprite
+	if tier == 1:
+		sprite.modulate = Globals.BALL_RED
+		sprite.scale = Globals.BALL_SMALL
+	elif tier == 2:  # orange
+		sprite.modulate = Globals.BALL_ORANGE
+		sprite.scale = Globals.BALL_MEDIUM
+	elif tier == 3:  # red
+		sprite.modulate = Globals.BALL_YELLOW
+		sprite.scale = Globals.BALL_LARGE
+	else:
+		assert(false)
 
 func animation_process(progress: float):  # progress is between 0 and 1
 	if progress >= 1.0:

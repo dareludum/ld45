@@ -15,6 +15,7 @@ const BaseCell = preload("res://scripts/BaseCell.gd")
 const Ball = preload("res://scripts/Ball.gd")
 var Source = load("res://scripts/Source.gd")
 var Mirror = load("res://scripts/Mirror.gd")
+var Amplifier = load("res://scripts/Amplifier.gd")
 
 const SourceScene = preload("res://scenes/Source.tscn")
 const BallScene = preload("res://scenes/Ball.tscn")
@@ -227,11 +228,11 @@ func sim_stop():
 	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
 	var b0 = BallScene.instance()
 	b0.init(hex_grid, HexCell.DIR_SW * 3 + HexCell.DIR_NE + HexCell.DIR_N, HexCell.DIR_SE)
-	b0.tier = 1
+	b0.set_tier(1)
 	$BallHolder.add_child(b0)
 
 	var b1 = BallScene.instance()
-	b1.tier = 3
+	b1.set_tier(3)
 	b1.init(hex_grid, HexCell.DIR_SE * 4, HexCell.DIR_N)
 	$BallHolder.add_child(b1)
 
@@ -239,24 +240,24 @@ func sim_stop():
 	# balls that collide head on
 	var b2 = BallScene.instance()
 	b2.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_N, HexCell.DIR_S)
-	b2.tier = 2
+	b2.set_tier(2)
 	$BallHolder.add_child(b2)
 
 	var b3 = BallScene.instance()
 	b3.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_S, HexCell.DIR_N)
-	b3.tier = 2
+	b3.set_tier(2)
 	$BallHolder.add_child(b3)
 
 	# a ball that gets amplified
 	var b4 = BallScene.instance()
 	b4.init(hex_grid, HexCell.new(HexCell.DIR_N * 2 + 3 * HexCell.DIR_NW), HexCell.DIR_S)
-	b4.tier = 1
+	b4.set_tier(1)
 	$BallHolder.add_child(b4)
 
 	# TESTING CODE END
 
 
-func sim_crash(reason: String = "no reason") -> void:
+func sim_crash(reason: String = "no reason", locations: Array = []) -> void:
 	print("sim_crash: %s" % reason)
 	$Background.self_modulate = BackgroundColorCrashed
 	state = SimulationState.CRASHED
@@ -266,8 +267,12 @@ func sim_crash(reason: String = "no reason") -> void:
 # ===== End of simulation code =====
 
 
+func get_animation_time() -> float:
+	return Globals.get_animation_time(tick_timer.wait_time)
+
+
 func _process(delta: float) -> void:
-	interpolation_t = min(1.0, interpolation_t + delta / Globals.get_animation_time(tick_timer.wait_time))
+	interpolation_t = min(1.0, interpolation_t + delta / get_animation_time())
 	for child in $CellHolder.get_children():
 		child.animation_process(interpolation_t)
 	for child in $BallHolder.get_children():
@@ -387,7 +392,7 @@ func _game_tick():
 		var visitors = balls_moving_to[hex_pos]
 		if child is Source:
 			sim_crash("ball entered a source at %s" % hex_pos)
-		if child is Mirror:
+		elif child is Mirror or child is Amplifier:
 			child.balls_entered(visitors, self)
 
 		# consume this collision to prevent both the ball-structure and ball-ball rules from applying
@@ -418,7 +423,7 @@ func balls_collided(balls):
 		return
 
 	var points = 1
-	var time_to_collision = Globals.get_animation_time(tick_timer.wait_time)
+	var time_to_collision = get_animation_time()
 	new_floating_text(0.5 * (balls[0].cell.cube_coords + balls[1].cell.cube_coords), time_to_collision, "+" + str(points))
 	queue_free_in(time_to_collision, balls)
 	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
