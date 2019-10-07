@@ -27,17 +27,24 @@ func balls_entering(balls, main):
 		return
 
 	var ball = balls[0]
+	var cw: bool
 	if flip == (ball.direction in directions_cw):
+		cw = true
 		ball.direction = HexCell.rotate_direction_cw(ball.direction)
 	else:
 		ball.direction = HexCell.rotate_direction_ccw(ball.direction)
+		cw = false
 
 	interpolation_deg_from = HexCell.direction_to_degrees(self.direction)
-	if flip:
-		self.direction = HexCell.rotate_direction_cw(orig_direction)
+	if cw:
+		self.direction = HexCell.rotate_direction_cw(self.direction)
 	else:
-		self.direction = orig_direction
+		self.direction = HexCell.rotate_direction_ccw(self.direction)
 	interpolation_deg_to = HexCell.direction_to_degrees(self.direction)
+	if interpolation_deg_to > interpolation_deg_from + 70:
+		interpolation_deg_to = interpolation_deg_from - 60
+	elif interpolation_deg_to < interpolation_deg_from - 70:
+		interpolation_deg_to = interpolation_deg_from + 60
 
 	animation_duration = main.get_animation_time()
 	time_to_animation = 0.75 * animation_duration
