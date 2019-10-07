@@ -258,6 +258,11 @@ func get_tick_time():
 		assert(false)
 
 
+func get_animation_time() -> float:
+	return get_tick_time() / 1.5
+	# todo: return get_tick_time() if smooth animaton is on
+
+
 func get_animation_speed():
 	if sim_speed == 1:
 		return 1.0
@@ -341,10 +346,6 @@ func sim_crash(reason: String, locations: Array) -> void:
 				break
 
 # ===== End of simulation code =====
-
-
-func get_animation_time() -> float:
-	return Globals.get_animation_time(get_tick_time())
 
 
 func set_ball_tier(ball: Ball, tier: int):

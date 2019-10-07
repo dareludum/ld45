@@ -19,6 +19,3 @@ const BALL_LARGE = 2 * Vector2(0.3, 0.3) # sqrt(1.7)
 
 const FLOATING_TEXT_SCROLL_SPEED: float = 30.0  # pixels per second
 const FLOATING_TEXT_SCROLL_TIME:  float = 1.25  # seconds
-
-static func get_animation_time(tick_time: float):
-	return tick_time / 1.5
