@@ -83,6 +83,9 @@ var interpolation_t: float = 0
 var tick: int = 0   # counts simulation steps, resets to 0 in sim_start
 var score: int = 0
 
+signal move_anim_done
+var time_to_move_anim_done: float = 0.0
+var floating_texts_to_add: Array = []
 
 func _ready():
 	hex_grid.hex_scale = Vector2(50, 50)
@@ -94,6 +97,8 @@ func _ready():
 	assert(OK == tick_timer.connect("timeout", self, "_game_tick"))
 	tick_timer.autostart = false
 	self.add_child(tick_timer)
+
+	self.connect("move_anim_done", self, "on_move_anim_done")
 
 	# TESTING CODE BEGIN
 
@@ -376,15 +381,32 @@ func _process(delta: float) -> void:
 	for child in $BallToDeleteHolder.get_children():
 		child.animation_process(interpolation_t)
 
+	var anim_not_done = time_to_move_anim_done > 0.0
+	time_to_move_anim_done -= delta
+	if anim_not_done and time_to_move_anim_done <= 0.0:
+		emit_signal("move_anim_done")
 
-func add_floating_text(cell_or_hex_pos, show_delay: float, text: String, color=null):
-	var ft = FloatingTextScene.instance()
+
+func on_move_anim_done():
+	for d in floating_texts_to_add:
+		var ft = FloatingTextScene.instance()
+		$FloatingTextHolder.add_child(ft)
+		ft.position = d.pos
+		ft.start(d.text, d.color)
+	floating_texts_to_add = []
+
+
+func add_floating_text(cell_or_hex_pos, text: String, color=null):
+	var pos: Vector2
 	if cell_or_hex_pos is HexCell:
-		ft.position = hex_grid.get_hex_center(cell_or_hex_pos.cube_coords)
+		pos = hex_grid.get_hex_center(cell_or_hex_pos.cube_coords)
 	else:
-		ft.position = hex_grid.get_hex_center(cell_or_hex_pos)
-	$FloatingTextHolder.add_child(ft)
-	ft.start(text, show_delay, color)
+		pos = hex_grid.get_hex_center(cell_or_hex_pos)
+	floating_texts_to_add.append({
+		pos=pos,
+		text=text,
+		color=color,
+	})
 
 
 func add_ball(cell_or_pos, direction: Vector3, show_delay: float = 0.0):
@@ -481,6 +503,8 @@ func _game_tick():
 		else:
 			$StatusBar/TextStatus.text = "Validated! Zero score - try colliding the balls"
 		$StatusBar/TextStatus.self_modulate = Color.greenyellow
+
+	time_to_move_anim_done = get_animation_time()
 
 	var ball_holder = $BallHolder
 
@@ -631,7 +655,7 @@ func balls_collided(balls, hex_pos):
 		else:
 			text = str(points)
 			color = Color.gray
-		add_floating_text(0.5 * (b0.cell.cube_coords + b1.cell.cube_coords), time_to_collision, text, color)
+		add_floating_text(0.5 * (b0.cell.cube_coords + b1.cell.cube_coords), text, color)
 
 	if to_delete:
 		queue_free_in(time_to_collision, to_delete)
