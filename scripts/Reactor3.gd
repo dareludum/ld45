@@ -1,6 +1,5 @@
 extends BaseCell
 
-var points: int = 0 # read and reset from Main
 
 var directions_in: Array
 
@@ -38,4 +37,5 @@ func balls_entering(balls, main):
 		else:
 			assert(false)
 
-	points = sum * sum
+	main.add_points(sum * sum, cell.cube_coords)
+	main.delete_balls_after_move(balls)

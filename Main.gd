@@ -16,6 +16,7 @@ var Mirror = load("res://scripts/Mirror.gd")
 var Amplifier = load("res://scripts/Amplifier.gd")
 var FlipFlop = load("res://scripts/FlipFlop.gd")
 var Reactor3 = load("res://scripts/Reactor3.gd")
+var Reactor6 = load("res://scripts/Reactor6.gd")
 
 const SourceScene = preload("res://scenes/Source.tscn")
 const BallScene = preload("res://scenes/Ball.tscn")
@@ -555,10 +556,6 @@ func sim_step():
 
 		var visitors = balls_moving_to[hex_pos]
 		child.balls_entering(visitors, self)
-		if child is Reactor3:
-			add_points(child.points, child.cell.cube_coords)
-			child.points = 0
-			delete_balls_after_move(visitors)
 
 		# consume this collision to prevent both the ball-structure and ball-ball rules from applying
 		balls_moving_to.erase(hex_pos)
