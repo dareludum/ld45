@@ -71,6 +71,7 @@ const TOOL_USES_MAX = {
 	EditorTool.SOURCE: 2,
 	EditorTool.AMPLIFIER: 1,
 	EditorTool.REACTOR3: 1,
+	EditorTool.REACTOR6: 1,
 }
 
 var state = SimulationState.STOPPED
@@ -83,6 +84,7 @@ var placed_cells_per_tool = {
 	EditorTool.SOURCE: 0,
 	EditorTool.AMPLIFIER: 0,
 	EditorTool.REACTOR3: 0,
+	EditorTool.REACTOR6: 0,
 }
 
 # Run time - specific
@@ -144,6 +146,7 @@ func _ready():
 	ui_bar.set_source_uses_count(TOOL_USES_MAX[EditorTool.SOURCE])
 	ui_bar.set_amplifier_uses_count(TOOL_USES_MAX[EditorTool.AMPLIFIER])
 	ui_bar.set_reactor3_uses_count(TOOL_USES_MAX[EditorTool.REACTOR3])
+	ui_bar.set_reactor6_uses_count(TOOL_USES_MAX[EditorTool.REACTOR6])
 
 	sim_speed = 1
 	sim_set_tool(EditorTool.ERASER)
@@ -221,6 +224,8 @@ func sim_update_tool_uses(tool_, modifier: int):
 		ui_bar.set_amplifier_uses_count(uses_left)
 	elif tool_ == EditorTool.REACTOR3:
 		ui_bar.set_reactor3_uses_count(uses_left)
+	elif tool_ == EditorTool.REACTOR6:
+		ui_bar.set_reactor6_uses_count(uses_left)
 	else:
 		assert(false)
 	placed_cells_per_tool[tool_] = new_count
@@ -236,10 +241,11 @@ func sim_cell_click(cell):
 		if child.cell.cube_coords == cell.cube_coords:
 			current_cell = child
 
-	# This condition allows rotating a placed Source or Reactor3 in place even if no more usages
+	# This condition allows rotating a placed Source or Reactor[3|6] in place even if no more usages
 	if (picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]
 		and not (current_cell != null and current_cell is Source and picked_tool == EditorTool.SOURCE)
-		and not (current_cell != null and current_cell is Reactor3 and picked_tool == EditorTool.REACTOR3)):
+		and not (current_cell != null and current_cell is Reactor3 and picked_tool == EditorTool.REACTOR3)
+		and not (current_cell != null and current_cell is Reactor6 and picked_tool == EditorTool.REACTOR6)):
 			return
 
 	if current_cell != null:
@@ -249,6 +255,8 @@ func sim_cell_click(cell):
 			sim_update_tool_uses(EditorTool.AMPLIFIER, +1)
 		elif current_cell is Reactor3:
 			sim_update_tool_uses(EditorTool.REACTOR3, +1)
+		elif current_cell is Reactor6:
+			sim_update_tool_uses(EditorTool.REACTOR6, +1)
 		current_cell.queue_free()
 
 	if picked_tool == EditorTool.ERASER:
@@ -257,7 +265,7 @@ func sim_cell_click(cell):
 	var new_cell = sim_get_tool_cell(cell)
 	$CellHolder.add_child(new_cell)
 	if (picked_tool == EditorTool.SOURCE or picked_tool == EditorTool.AMPLIFIER
-		or picked_tool == EditorTool.REACTOR3):
+		or picked_tool == EditorTool.REACTOR3 or picked_tool == EditorTool.REACTOR6):
 			sim_update_tool_uses(picked_tool, -1)
 
 

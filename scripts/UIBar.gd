@@ -82,6 +82,10 @@ func set_reactor3_uses_count(count: int):
 	$CellHolder/ButtonCellReactor3.set_uses_count(count)
 
 
+func set_reactor6_uses_count(count: int):
+	$CellHolder/ButtonCellReactor6.set_uses_count(count)
+
+
 func simulation_started():
 	$SimControlHolder/ButtonStartPause/SpriteStart.visible = false
 	$SimControlHolder/ButtonStartPause/SpritePause.visible = true
