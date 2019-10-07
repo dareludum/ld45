@@ -59,8 +59,8 @@ enum EditorTool {
 const TOOL_UNLOCK_TARGETS = {
 	EditorTool.ERASER: 0,
 	EditorTool.SOURCE: 0,
-	EditorTool.MIRROR: 10,
-	EditorTool.AMPLIFIER: 40,
+	EditorTool.MIRROR: 20,
+	EditorTool.AMPLIFIER: 60,
 	EditorTool.FLIPFLOP: 100,
 	EditorTool.REACTOR3: 150,
 	EditorTool.YCOMB: 400,
@@ -75,7 +75,7 @@ const TOOL_USES_MAX = {
 }
 
 var state = SimulationState.STOPPED
-var hi_score: int = 1000
+var hi_score: int = 0
 
 # Design time - specific
 var picked_tool
@@ -119,7 +119,7 @@ func _ready():
 	ui_bar.set_reactor3_uses_count(TOOL_USES_MAX[EditorTool.REACTOR3])
 	ui_bar.set_reactor6_uses_count(TOOL_USES_MAX[EditorTool.REACTOR6])
 	ui_bar.connect("sandbox_click", self, "sim_enable_sandbox_mode")
-
+	ui_bar.connect("progress_restore", self, "sim_restore_progress")
 	ui_bar.get_node("ButtonSmooth/Script").connect("smoothness_changed", self, "on_smoothness_changed")
 
 	sim_speed = 1
@@ -137,6 +137,12 @@ func sim_enable_sandbox_mode():
 	ui_bar.set_reactor6_uses_count(-1)
 	sandbox_mode = true
 	sim_update_tool_highlight()
+
+
+func sim_restore_progress(score):
+	if hi_score < score:
+		hi_score = score
+		ui_bar.set_hi(hi_score)
 
 
 func sim_get_tool_cell(cell):

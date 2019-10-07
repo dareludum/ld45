@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://scripts/UIBar.gd" type="Script" id=1]
 [ext_resource path="res://fonts/HintFont.tres" type="DynamicFont" id=2]
@@ -22,6 +22,7 @@
 [ext_resource path="res://scripts/ButtonSmooth.gd" type="Script" id=20]
 [ext_resource path="res://images/sawtooth.png" type="Texture" id=21]
 [ext_resource path="res://images/tilde.png" type="Texture" id=22]
+[ext_resource path="res://fonts/KeyHintFont.tres" type="DynamicFont" id=23]
 
 [node name="UIBar" type="Control"]
 anchor_right = 1.0
@@ -64,7 +65,6 @@ margin_bottom = 75.1072
 color = Color( 0.270588, 0.301961, 0.564706, 1 )
 
 [node name="PointsHolder" type="Control" parent="."]
-editor/display_folded = true
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 90.0
@@ -72,17 +72,19 @@ margin_bottom = 70.0
 rect_pivot_offset = Vector2( 60, 40 )
 
 [node name="LabelHI" type="Label" parent="PointsHolder"]
-margin_left = 6.34902
-margin_top = 9.4633
-margin_right = 24.349
-margin_bottom = 23.4633
+margin_left = 6.73644
+margin_top = 6.75134
+margin_right = 24.7364
+margin_bottom = 23.7513
+custom_fonts/font = ExtResource( 2 )
 text = "HI"
 
 [node name="LabelPts" type="Label" parent="PointsHolder"]
-margin_left = 4.31496
-margin_top = 38.93
-margin_right = 24.315
-margin_bottom = 52.93
+margin_left = 4.8961
+margin_top = 36.7992
+margin_right = 24.8961
+margin_bottom = 53.7992
+custom_fonts/font = ExtResource( 2 )
 text = "Pts"
 
 [node name="RectHI" type="ColorRect" parent="PointsHolder"]
@@ -100,18 +102,20 @@ margin_bottom = 54.7098
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="TextHI" type="Label" parent="PointsHolder"]
-margin_left = 36.0233
-margin_top = 9.12209
-margin_right = 70.0233
-margin_bottom = 23.1221
+margin_left = 36.217
+margin_top = 6.99126
+margin_right = 70.217
+margin_bottom = 23.9913
+custom_fonts/font = ExtResource( 2 )
 text = "0"
 align = 2
 
 [node name="TextPts" type="Label" parent="PointsHolder"]
 margin_left = 35.7791
-margin_top = 38.667
+margin_top = 36.7299
 margin_right = 69.7791
-margin_bottom = 52.667
+margin_bottom = 53.7299
+custom_fonts/font = ExtResource( 2 )
 text = "0"
 align = 2
 
@@ -465,6 +469,20 @@ margin_right = 49.7207
 margin_bottom = 49.6828
 target = 1000
 
+[node name="Separator5" type="ColorRect" parent="."]
+margin_left = 777.648
+margin_top = 10.1038
+margin_right = 779.648
+margin_bottom = 70.1038
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="Separator6" type="ColorRect" parent="."]
+margin_left = 946.172
+margin_top = 10.1392
+margin_right = 948.172
+margin_bottom = 70.1392
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
 [node name="ButtonSmooth" parent="." instance=ExtResource( 11 )]
 anchor_left = 1.0
 anchor_right = 1.0
@@ -488,3 +506,38 @@ visible = false
 position = Vector2( 25, 25 )
 scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 22 )
+
+[node name="LabelRestore" type="Label" parent="."]
+margin_left = 787.832
+margin_top = 8.05524
+margin_right = 941.832
+margin_bottom = 45.0552
+custom_fonts/font = ExtResource( 2 )
+text = "To restore progress, enter
+the last tool name you saw"
+
+[node name="TextEditRestore" type="LineEdit" parent="."]
+self_modulate = Color( 0.541176, 0.584314, 0.941176, 1 )
+margin_left = 790.0
+margin_top = 46.0
+margin_right = 906.0
+margin_bottom = 70.0
+focus_mode = 1
+custom_fonts/font = ExtResource( 23 )
+max_length = 20
+focus_mode = 1
+context_menu_enabled = false
+
+[node name="ButtonRestore" parent="." instance=ExtResource( 3 )]
+margin_left = 913.507
+margin_top = 46.3472
+margin_right = 937.507
+margin_bottom = 70.3472
+
+[node name="Label" type="Label" parent="ButtonRestore"]
+margin_left = 5.12622
+margin_top = 4.69906
+margin_right = 45.1262
+margin_bottom = 18.6991
+custom_fonts/font = ExtResource( 23 )
+text = "OK"

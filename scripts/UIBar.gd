@@ -3,6 +3,7 @@ extends Control
 const Globals = preload("res://scripts/Globals.gd")
 
 signal sandbox_click
+signal progress_restore # int
 
 func _enter_tree():
 	assert(OK == $SimControlHolder/ButtonStartPause.connect("mouse_enter", self, "_on_button_mouse_enter"))
@@ -55,6 +56,7 @@ func _enter_tree():
 	assert(OK == $ButtonSandbox.connect("click", self, "_on_sandbox_click"))
 	assert(OK == $ButtonSmooth.connect("mouse_enter", self, "_on_button_mouse_enter"))
 	assert(OK == $ButtonSmooth.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $ButtonRestore.connect("click", self, "_on_restore_click"))
 
 
 func set_points(points: int):
@@ -211,3 +213,32 @@ func _on_pick_reactor6_click():
 
 func _on_sandbox_click():
 	emit_signal("sandbox_click")
+
+
+func _on_restore_click():
+	$TextEditRestore.focus_mode = FOCUS_NONE
+	$TextEditRestore.focus_mode = FOCUS_CLICK
+	
+	var text = $TextEditRestore.text.to_lower().replace("\n", "").replace("\t", "").replace(" ", "").replace("-", "")
+	var score = 0
+	if text == "mirror":
+		score = 20
+	elif text == "amplifier":
+		score = 60
+	elif text == "flipflop":
+		score = 100
+	elif (text == "3reactor" or text == "trireactor" or text == "threereactor"
+		or text == "reactor3" or text == "reactorthree"):
+			score = 150
+	elif text.substr(0, 5) == "ycomb":
+		score = 400
+	elif (text == "6reactor" or text == "sixreactor"
+		or text == "reactor6" or text == "reactorsix"
+		or text == "sandbox"):
+			score = 1000
+	else:
+		$TextEditRestore.text = "Wrong tool name!"
+
+	if score > 0:
+		$TextEditRestore.text = ""
+		emit_signal("progress_restore", score)
