@@ -79,8 +79,9 @@ var placed_cells_per_tool = {
 }
 
 # Run time - specific
-var tick_timer = Timer.new()
-var interpolation_t: float = 0
+var sim_speed: int = 1
+var time_to_sim_step: float = 0.0
+var interpolation_t: float = 0.0
 var tick: int = 0   # counts simulation steps, resets to 0 in sim_start
 var score: int = 0
 
@@ -98,9 +99,6 @@ func _ready():
 			var cell = preload("res://scenes/Cell.tscn").instance()
 			cell.init(hex_grid, Vector2(i, j), HexCell.DIR_SE)
 			$BackgroundCellHolder.add_child(cell)
-	assert(OK == tick_timer.connect("timeout", self, "_game_tick"))
-	tick_timer.autostart = false
-	self.add_child(tick_timer)
 
 	self.connect("move_anim_done", self, "on_move_anim_done")
 
@@ -139,7 +137,7 @@ func _ready():
 	$UIBar.set_source_uses_count(TOOL_USES_MAX[EditorTool.SOURCE])
 	$UIBar.set_amplifier_uses_count(TOOL_USES_MAX[EditorTool.AMPLIFIER])
 
-	sim_set_speed(1)
+	sim_speed = 1
 	sim_set_tool(EditorTool.ERASER)
 	sim_stop() # TODO: remove, for now it just sets up the testing config
 
@@ -253,13 +251,13 @@ func sim_cell_click(cell):
 # ===== Simulation Running =====
 
 
-func sim_set_speed(speed: int):
-	if speed == 1:
-		tick_timer.wait_time = Globals.TICK_TIME
-	elif speed == 2:
-		tick_timer.wait_time = Globals.TICK_TIME_FAST
-	elif speed == 3:
-		tick_timer.wait_time = Globals.TICK_TIME_FASTEST
+func get_tick_time():
+	if sim_speed == 1:
+		return Globals.TICK_TIME
+	elif sim_speed == 2:
+		return Globals.TICK_TIME_FAST
+	elif sim_speed == 3:
+		return Globals.TICK_TIME_FASTEST
 	else:
 		assert(false)
 
@@ -280,20 +278,19 @@ func sim_start():
 		$StatusBar.visible = true
 
 	state = SimulationState.RUNNING
-	_game_tick()
-	tick_timer.start()
+	sim_step()
+	time_to_sim_step = get_tick_time()
 
 
 func sim_pause():
 	print("sim_pause")
 	$Background.self_modulate = BackgroundColorPaused
 	state = SimulationState.PAUSED
-	tick_timer.stop()
 
 
 func sim_stop():
 	print("sim_stop")
-	tick_timer.stop()
+	time_to_sim_step = 0.0
 	state = SimulationState.STOPPED
 
 	$Background.self_modulate = BackgroundColorEditor
@@ -316,43 +313,9 @@ func sim_stop():
 	for child in $BackgroundCellHolder.get_children():
 		child.reset()
 
-	# TESTING CODE BEGIN
-
-	# balls to run around the circle, positions coupled with _ready
-#	var offset01 = HexCell.DIR_NE + HexCell.DIR_SE
-#	var b0 = BallScene.instance()
-#	b0.init(hex_grid, HexCell.DIR_SW * 3 + HexCell.DIR_NE + HexCell.DIR_N, HexCell.DIR_SE)
-#	b0.set_tier(1)
-#	$BallHolder.add_child(b0)
-#
-#	var b1 = BallScene.instance()
-#	b1.set_tier(3)
-#	b1.init(hex_grid, HexCell.DIR_SE * 4, HexCell.DIR_N)
-#	$BallHolder.add_child(b1)
-#
-#
-#	# balls that collide head on
-#	var b2 = BallScene.instance()
-#	b2.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_N, HexCell.DIR_S)
-#	b2.set_tier(2)
-#	$BallHolder.add_child(b2)
-#
-#	var b3 = BallScene.instance()
-#	b3.init(hex_grid, HexCell.DIR_NE * 4 + 2 * HexCell.DIR_S, HexCell.DIR_N)
-#	b3.set_tier(2)
-#	$BallHolder.add_child(b3)
-#
-#	# a ball that gets amplified
-#	var b4 = BallScene.instance()
-#	b4.init(hex_grid, HexCell.new(HexCell.DIR_N * 2 + 3 * HexCell.DIR_NW), HexCell.DIR_S)
-#	b4.set_tier(1)
-#	$BallHolder.add_child(b4)
-
-	# TESTING CODE END
-
 
 func sim_crash(reason: String = "no reason", locations: Array = []) -> void:
-	tick_timer.stop()
+	time_to_sim_step = 0.0
 	state = SimulationState.CRASHED
 
 	if locations:
@@ -373,7 +336,7 @@ func sim_crash(reason: String = "no reason", locations: Array = []) -> void:
 
 
 func get_animation_time() -> float:
-	return Globals.get_animation_time(tick_timer.wait_time)
+	return Globals.get_animation_time(get_tick_time())
 
 
 func set_ball_tier(ball: Ball, tier: int):
@@ -383,6 +346,12 @@ func set_ball_tier(ball: Ball, tier: int):
 
 
 func _process(delta: float) -> void:
+	if state == SimulationState.RUNNING:
+		time_to_sim_step -= delta
+		if time_to_sim_step <= 0.0:
+			sim_step()
+			time_to_sim_step += get_tick_time()
+
 	interpolation_t = min(1.0, interpolation_t + delta / get_animation_time())
 	for child in $CellHolder.get_children():
 		child.animation_process(interpolation_t)
@@ -391,10 +360,14 @@ func _process(delta: float) -> void:
 	for child in $BallToDeleteHolder.get_children():
 		child.animation_process(interpolation_t)
 
-	var anim_not_done = time_to_move_anim_done > 0.0
-	time_to_move_anim_done -= delta
-	if anim_not_done and time_to_move_anim_done <= 0.0:
-		emit_signal("move_anim_done")
+	if time_to_move_anim_done > 0.0:
+		time_to_move_anim_done -= delta
+		if time_to_move_anim_done <= 0.0:
+			emit_signal("move_anim_done")
+
+
+func safe_to_touch(node):
+	return is_instance_valid(node) and not node.is_queued_for_deletion()
 
 
 func on_move_anim_done():
@@ -407,12 +380,14 @@ func on_move_anim_done():
 		floating_texts_to_add.clear()
 
 	for b in balls_to_show:
-		b.show()
+		if safe_to_touch(b):
+			b.show()
 	if balls_to_show:
 		balls_to_show.clear()
 
 	for d in tiers_to_set:
-		d.ball.set_tier(d.tier)
+		if safe_to_touch(d.ball):
+			d.ball.set_tier(d.tier)
 	if tiers_to_set:
 		tiers_to_set.clear()
 
@@ -471,11 +446,11 @@ func _unhandled_input(event):
 	elif Input.is_action_just_pressed("sim_stop"):
 		sim_stop()
 	elif Input.is_action_just_pressed("sim_speed_1"):
-		sim_set_speed(1)
+		sim_speed = 1
 	elif Input.is_action_just_pressed("sim_speed_2"):
-		sim_set_speed(2)
+		sim_speed = 2
 	elif Input.is_action_just_pressed("sim_speed_3"):
-		sim_set_speed(3)
+		sim_speed = 3
 	elif Input.is_action_just_pressed("sim_rotate_left"):
 		sim_rotate_tool_ccw()
 	elif Input.is_action_just_pressed("sim_rotate_right"):
@@ -499,10 +474,9 @@ func _unhandled_input(event):
 
 
 # Main logic function, does one simulation step
-func _game_tick():
+func sim_step():
 	if state != SimulationState.RUNNING:
 		# no time to debug why this happens
-		tick_timer.stop()
 		return
 
 	tick += 1
