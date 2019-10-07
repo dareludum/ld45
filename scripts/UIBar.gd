@@ -142,15 +142,31 @@ func _on_stop_click():
 
 
 func _on_speed1_click():
+	set_selected_speed(1)
 	simulate_input_event("sim_speed_1")
 
 
 func _on_speed2_click():
+	set_selected_speed(2)
 	simulate_input_event("sim_speed_2")
 
 
 func _on_speed3_click():
+	set_selected_speed(3)
 	simulate_input_event("sim_speed_3")
+
+
+func set_selected_speed(speed: int):
+	var toggles = {
+		1: $SimControlHolder/ButtonSpeed1/Selected,
+		2: $SimControlHolder/ButtonSpeed2/Selected,
+		3: $SimControlHolder/ButtonSpeed3/Selected,
+	}
+	for i in toggles:
+		if speed == i:
+			toggles[i].show()
+		else:
+			toggles[i].hide()
 
 
 func _on_rotate_right_click():

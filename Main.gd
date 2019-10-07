@@ -123,6 +123,7 @@ func _ready():
 	ui_bar.get_node("ButtonSmooth/Script").connect("smoothness_changed", self, "on_smoothness_changed")
 
 	sim_speed = 1
+	ui_bar.set_selected_speed(sim_speed)
 	sim_set_tool(EditorTool.SOURCE)
 
 

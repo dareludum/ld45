@@ -123,7 +123,6 @@ margin_bottom = 70.3663
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="SimControlHolder" type="Control" parent="."]
-editor/display_folded = true
 margin_left = 100.0
 margin_top = 10.0
 margin_right = 166.0
