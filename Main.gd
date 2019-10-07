@@ -74,7 +74,7 @@ var hi_score: int = 400
 
 # Design time - specific
 var picked_tool
-var picked_tool_direction: Vector3
+var picked_tool_direction = HexCell.DIR_SE
 var placed_cells_per_tool = {
 	EditorTool.SOURCE: 0,
 	EditorTool.AMPLIFIER: 0,
@@ -194,7 +194,6 @@ func sim_set_tool(tool_):
 		return
 
 	picked_tool = tool_
-	picked_tool_direction = HexCell.DIR_SE
 	sim_update_tool_highlight()
 
 
