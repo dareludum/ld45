@@ -78,6 +78,7 @@ var state = SimulationState.STOPPED
 var hi_score: int = 0
 
 # Design time - specific
+var prev_picked_tool
 var picked_tool
 var picked_tool_direction: Vector3
 var placed_cells_per_tool = {
@@ -201,17 +202,23 @@ func sim_set_tool(tool_):
 	if (hi_score < TOOL_UNLOCK_TARGETS[tool_]):
 		return
 
+	if tool_ != EditorTool.ERASER and (picked_tool != EditorTool.ERASER or prev_picked_tool != tool_):
+		picked_tool_direction = HexCell.DIR_SE
+	prev_picked_tool = picked_tool
 	picked_tool = tool_
-	picked_tool_direction = HexCell.DIR_SE
 	sim_update_tool_highlight()
 
 
 func sim_rotate_tool_cw():
+	if picked_tool == EditorTool.ERASER:
+		return
 	picked_tool_direction = HexCell.rotate_direction_cw(picked_tool_direction)
 	sim_update_tool_highlight()
 
 
 func sim_rotate_tool_ccw():
+	if picked_tool == EditorTool.ERASER:
+		return
 	picked_tool_direction = HexCell.rotate_direction_ccw(picked_tool_direction)
 	sim_update_tool_highlight()
 
