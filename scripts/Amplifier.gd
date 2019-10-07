@@ -1,6 +1,6 @@
 extends BaseCell
 
-func balls_entered(balls, main) -> void:
+func balls_entering(balls, main) -> void:
 	if len(balls) > 1:
 		main.sim_crash("balls collided inside an amplifier", [self.cell.cube_coords])
 		return

@@ -27,7 +27,7 @@ func _on_init():
 	pass
 
 
-func balls_entered(balls, main):
+func balls_entering(balls, main):
 	print("NOT IMPLEMENTED")
 
 

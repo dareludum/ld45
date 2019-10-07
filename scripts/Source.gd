@@ -13,7 +13,7 @@ func _on_init():
 	reset_position()
 
 
-func balls_entered(balls, main):
+func balls_entering(balls, main):
 	main.sim_crash("ball collided with a source", [self.cell.cube_coords])
 
 

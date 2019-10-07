@@ -559,7 +559,7 @@ func _game_tick():
 		if not hex_pos in balls_moving_to:
 			continue
 
-		child.balls_entered(balls_moving_to[hex_pos], self)
+		child.balls_entering(balls_moving_to[hex_pos], self)
 
 		# consume this collision to prevent both the ball-structure and ball-ball rules from applying
 		balls_moving_to.erase(hex_pos)

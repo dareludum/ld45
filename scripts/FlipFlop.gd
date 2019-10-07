@@ -18,7 +18,7 @@ func _on_init():
 	reset_position()
 
 
-func balls_entered(balls, main):
+func balls_entering(balls, main):
 	if len(balls) > 1:
 		main.sim_crash("balls collided inside a flip-flop", [self.cell.cube_coords])
 		return
@@ -28,7 +28,7 @@ func balls_entered(balls, main):
 		ball.direction = HexCell.rotate_direction_cw(ball.direction)
 	else:
 		ball.direction = HexCell.rotate_direction_ccw(ball.direction)
-	
+
 	interpolation_deg_from = HexCell.direction_to_degrees(self.direction)
 	if flip:
 		self.direction = HexCell.rotate_direction_cw(orig_direction)
