@@ -477,9 +477,9 @@ func _unhandled_input(event):
 		if highlight != null:
 			highlight.position = hex_grid.get_hex_center(cell)
 
-		if event is InputEventMouseButton:
-			if (event.button_index == BUTTON_LEFT and event.is_pressed()
-				and $CollisionBox.get_viewport_rect().has_point(event.position)):
+		if ($CollisionBox.get_viewport_rect().has_point(event.position)
+			and ((event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.is_pressed())
+				or Input.is_mouse_button_pressed(BUTTON_LEFT))):
 					sim_cell_click(cell)
 
 	if Input.is_action_just_pressed("sim_start_pause"):
