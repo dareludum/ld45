@@ -522,11 +522,7 @@ func _game_tick():
 		if not hex_pos in balls_moving_to:
 			continue
 
-		var visitors = balls_moving_to[hex_pos]
-		if child is Source:
-			sim_crash("ball collided with a source", [hex_pos])
-		elif child is Mirror or child is Amplifier:
-			child.balls_entered(visitors, self)
+		child.balls_entered(balls_moving_to[hex_pos], self)
 
 		# consume this collision to prevent both the ball-structure and ball-ball rules from applying
 		balls_moving_to.erase(hex_pos)

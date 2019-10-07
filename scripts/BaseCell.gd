@@ -10,6 +10,7 @@ var grid: HexGrid  # parent, set in init
 var cell: HexCell
 var direction = Vector3.ZERO
 
+
 # WARNING: this is not _init (Script.new) but a custom init to be called after Node.instance
 func init(grid: HexGrid, cell_or_hex_pos, direction: Vector3) -> void:
 	self.grid = grid
@@ -21,8 +22,14 @@ func init(grid: HexGrid, cell_or_hex_pos, direction: Vector3) -> void:
 	self.position = grid.get_hex_center(cell.cube_coords)
 	_on_init()
 
+
 func _on_init():
 	pass
+
+
+func balls_entered(balls, main):
+	print("NOT IMPLEMENTED")
+
 
 func animation_process(_progress):
 	pass

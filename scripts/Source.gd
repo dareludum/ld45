@@ -13,6 +13,10 @@ func _on_init():
 	reset_position()
 
 
+func balls_entered(balls, main):
+	main.sim_crash("ball collided with a source", [self.cell.cube_coords])
+
+
 func animation_process(progress: float):  # progress is between 0 and 1
 	if progress >= 1.0:
 		self.rotation_degrees = interpolation_deg_to
