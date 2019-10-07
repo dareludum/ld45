@@ -14,6 +14,7 @@ const Ball = preload("res://scripts/Ball.gd")
 var Source = load("res://scripts/Source.gd")
 var Mirror = load("res://scripts/Mirror.gd")
 var Amplifier = load("res://scripts/Amplifier.gd")
+var FlipFlop = load("res://scripts/FlipFlop.gd")
 
 const SourceScene = preload("res://scenes/Source.tscn")
 const BallScene = preload("res://scenes/Ball.tscn")
@@ -305,7 +306,7 @@ func sim_stop():
 
 	# reset rotations
 	for child in $CellHolder.get_children():
-		if child is Source:
+		if child is Source or child is FlipFlop:
 			child.reset_position()
 
 	# reset background
