@@ -15,6 +15,7 @@ var Source = load("res://scripts/Source.gd")
 var Mirror = load("res://scripts/Mirror.gd")
 var Amplifier = load("res://scripts/Amplifier.gd")
 var FlipFlop = load("res://scripts/FlipFlop.gd")
+var Reactor3 = load("res://scripts/Reactor3.gd")
 
 const SourceScene = preload("res://scenes/Source.tscn")
 const BallScene = preload("res://scenes/Ball.tscn")
@@ -65,6 +66,7 @@ const TOOL_UNLOCK_TARGETS = {
 const TOOL_USES_MAX = {
 	EditorTool.SOURCE: 2,
 	EditorTool.AMPLIFIER: 1,
+	EditorTool.REACTOR3: 1,
 }
 
 var state = SimulationState.STOPPED
@@ -76,6 +78,7 @@ var picked_tool_direction: Vector3
 var placed_cells_per_tool = {
 	EditorTool.SOURCE: 0,
 	EditorTool.AMPLIFIER: 0,
+	EditorTool.REACTOR3: 0,
 }
 
 # Run time - specific
@@ -136,6 +139,7 @@ func _ready():
 	$UIBar.set_hi(hi_score)
 	$UIBar.set_source_uses_count(TOOL_USES_MAX[EditorTool.SOURCE])
 	$UIBar.set_amplifier_uses_count(TOOL_USES_MAX[EditorTool.AMPLIFIER])
+	$UIBar.set_reactor3_uses_count(TOOL_USES_MAX[EditorTool.REACTOR3])
 
 	sim_speed = 1
 	sim_set_tool(EditorTool.ERASER)
@@ -212,6 +216,8 @@ func sim_update_tool_uses(tool_, modifier: int):
 		$UIBar.set_source_uses_count(uses_left)
 	elif tool_ == EditorTool.AMPLIFIER:
 		$UIBar.set_amplifier_uses_count(uses_left)
+	elif tool_ == EditorTool.REACTOR3:
+		$UIBar.set_reactor3_uses_count(uses_left)
 	else:
 		assert(false)
 	placed_cells_per_tool[tool_] = new_count
@@ -227,9 +233,10 @@ func sim_cell_click(cell):
 		if child.cell.cube_coords == cell.cube_coords:
 			current_cell = child
 
-	# This condition allows rotating a placed Source in place even if no more usages
+	# This condition allows rotating a placed Source or Reactor3 in place even if no more usages
 	if (picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]
-		and not (current_cell != null and current_cell is Source and picked_tool == EditorTool.SOURCE)):
+		and not (current_cell != null and current_cell is Source and picked_tool == EditorTool.SOURCE)
+		and not (current_cell != null and current_cell is Reactor3 and picked_tool == EditorTool.REACTOR3)):
 			return
 
 	if current_cell != null:
@@ -237,6 +244,8 @@ func sim_cell_click(cell):
 			sim_update_tool_uses(EditorTool.SOURCE, +1)
 		elif current_cell is Amplifier:
 			sim_update_tool_uses(EditorTool.AMPLIFIER, +1)
+		elif current_cell is Reactor3:
+			sim_update_tool_uses(EditorTool.REACTOR3, +1)
 		current_cell.queue_free()
 
 	if picked_tool == EditorTool.ERASER:
@@ -244,8 +253,9 @@ func sim_cell_click(cell):
 
 	var new_cell = sim_get_tool_cell(cell)
 	$CellHolder.add_child(new_cell)
-	if picked_tool == EditorTool.SOURCE or picked_tool == EditorTool.AMPLIFIER:
-		sim_update_tool_uses(picked_tool, -1)
+	if (picked_tool == EditorTool.SOURCE or picked_tool == EditorTool.AMPLIFIER
+		or picked_tool == EditorTool.REACTOR3):
+			sim_update_tool_uses(picked_tool, -1)
 
 
 # ===== Simulation Running =====
@@ -533,7 +543,14 @@ func sim_step():
 		if not hex_pos in balls_moving_to:
 			continue
 
-		child.balls_entering(balls_moving_to[hex_pos], self)
+		var visitors = balls_moving_to[hex_pos]
+		child.balls_entering(visitors, self)
+		if child is Reactor3:
+			add_points(child.points, child.cell.cube_coords)
+			child.points = 0
+			for ball in visitors:
+				$BallHolder.remove_child(ball)
+				$BallToDeleteHolder.add_child(ball)
 
 		# consume this collision to prevent both the ball-structure and ball-ball rules from applying
 		balls_moving_to.erase(hex_pos)
@@ -630,6 +647,15 @@ func balls_collided(balls, hex_pos):
 				set_ball_tier(add_ball(b0.cell, HexCell.DIR_ALL[(d0 + 5) % 6], true), b0.tier)
 				set_ball_tier(add_ball(b0.cell, HexCell.DIR_ALL[(d1 + 5) % 6], true), b0.tier)
 
+	add_points(points, 0.5 * (b0.cell.cube_coords + b1.cell.cube_coords))
+
+	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
+	for ball in to_delete:
+		$BallHolder.remove_child(ball)
+		$BallToDeleteHolder.add_child(ball)
+
+
+func add_points(points: int, coords: Vector3):
 	if points > 0:
 		var text: String
 		var color = null
@@ -639,10 +665,4 @@ func balls_collided(balls, hex_pos):
 		else:
 			text = str(points)
 			color = Color.gray
-		add_floating_text(0.5 * (b0.cell.cube_coords + b1.cell.cube_coords), text, color)
-
-
-	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
-	for ball in to_delete:
-		$BallHolder.remove_child(ball)
-		$BallToDeleteHolder.add_child(ball)
+		add_floating_text(coords, text, color)

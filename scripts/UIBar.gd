@@ -69,6 +69,10 @@ func set_amplifier_uses_count(count: int):
 	$CellHolder/ButtonCellAmplifier.set_uses_count(count)
 
 
+func set_reactor3_uses_count(count: int):
+	$CellHolder/ButtonCellReactor3.set_uses_count(count)
+
+
 func simulate_input_event(name):
 	var event = InputEventAction.new()
 	event.action = name
