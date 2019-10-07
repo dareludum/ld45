@@ -34,7 +34,7 @@ func balls_entering(balls, main) -> void:
 
 	if split:
 		if ball.tier <= 1:
-			main.sim_crash("only balls of tier 2 or higher can be split by a Y-combinator")
+			main.sim_crash("cannot split a tier 1 ball", [self.cell.cube_coords])
 			return
 		main.set_ball_tier(ball, ball.tier - 1)
 		ball.direction = thin_out[0]
