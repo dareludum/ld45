@@ -2,6 +2,9 @@ extends BaseCell
 
 var interpolation_deg_from: float
 var interpolation_deg_to: float
+var animation_duration: float
+var time_to_animation: float = -1.0
+var interpolation_t: float = 1.0
 
 var orig_direction: Vector3
 var directions_cw: Array
@@ -36,17 +39,32 @@ func balls_entering(balls, main):
 		self.direction = orig_direction
 	interpolation_deg_to = HexCell.direction_to_degrees(self.direction)
 
+	animation_duration = main.get_animation_time()
+	time_to_animation = 0.75 * animation_duration
+	animation_duration *= 0.5
 	flip = not flip
 
 
-func animation_process(progress: float):  # progress is between 0 and 1
-	if progress >= 1.0:
-		self.rotation_degrees = interpolation_deg_to
-		interpolation_deg_from = interpolation_deg_to
-	else:
-		self.rotation_degrees = interpolation_deg_from + (interpolation_deg_to - interpolation_deg_from) * progress
-	if self.rotation_degrees > 720.0:
-		self.rotation_degrees = self.rotation_degrees as int % 360
+func _process(delta: float) -> void:
+	var waiting = time_to_animation > 0.0
+	var animating = interpolation_t < 1.0
+	if not (waiting or animating):
+		return
+
+	if animating:
+		interpolation_t += delta / animation_duration
+		if interpolation_t >= 1.0:
+			self.rotation_degrees = interpolation_deg_to
+			interpolation_deg_from = interpolation_deg_to
+		else:
+			self.rotation_degrees = lerp(interpolation_deg_from, interpolation_deg_to, interpolation_t)
+		if self.rotation_degrees > 720.0:
+			self.rotation_degrees = self.rotation_degrees as int % 360
+	elif waiting:
+		time_to_animation -= delta
+		if time_to_animation <= 0.0:
+			interpolation_t = 0.0
+			self.rotation_degrees = interpolation_deg_from
 
 
 func reset_position():
@@ -54,3 +72,5 @@ func reset_position():
 	flip = true
 	interpolation_deg_to = HexCell.direction_to_degrees(self.direction)
 	interpolation_deg_from = interpolation_deg_to
+	time_to_animation = -1.0
+	interpolation_t = 1.0
