@@ -16,12 +16,11 @@ margin_bottom = 18.0973
 color = Color( 0.270588, 0.301961, 0.564706, 1 )
 
 [node name="Selected" type="ColorRect" parent="."]
-visible = false
-margin_left = 0.36116
-margin_top = 0.29519
-margin_right = 14.3612
-margin_bottom = 18.2952
-color = Color( 0.0313726, 0.0941176, 0.329412, 1 )
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 13.0
+margin_bottom = 17.0
+color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="BackgroundHover" type="ColorRect" parent="."]
 visible = false

@@ -122,8 +122,7 @@ func _ready():
 	ui_bar.connect("progress_restore", self, "sim_restore_progress")
 	ui_bar.get_node("ButtonSmooth/Script").connect("smoothness_changed", self, "on_smoothness_changed")
 
-	sim_speed = 1
-	ui_bar.set_selected_speed(sim_speed)
+	sim_set_speed(1)
 	sim_set_tool(EditorTool.SOURCE)
 
 
@@ -143,6 +142,12 @@ func sim_restore_progress(score):
 	if hi_score < score:
 		hi_score = score
 		ui_bar.set_hi(hi_score)
+
+
+func sim_set_speed(speed):
+	assert(speed >= 1 and speed <= 3)
+	sim_speed = speed
+	ui_bar.set_selected_speed(sim_speed)
 
 
 func sim_get_tool_cell(cell):
@@ -501,11 +506,11 @@ func _unhandled_input(event):
 	elif Input.is_action_just_pressed("sim_stop"):
 		sim_stop()
 	elif Input.is_action_just_pressed("sim_speed_1"):
-		sim_speed = 1
+		sim_set_speed(1)
 	elif Input.is_action_just_pressed("sim_speed_2"):
-		sim_speed = 2
+		sim_set_speed(2)
 	elif Input.is_action_just_pressed("sim_speed_3"):
-		sim_speed = 3
+		sim_set_speed(3)
 	elif Input.is_action_just_pressed("sim_rotate_left"):
 		sim_rotate_tool_ccw()
 	elif Input.is_action_just_pressed("sim_rotate_right"):

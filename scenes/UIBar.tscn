@@ -178,7 +178,7 @@ margin_bottom = 53.8827
 text_hint = "Normal speed (1)"
 
 [node name="Sprite" type="Sprite" parent="SimControlHolder/ButtonSpeed1"]
-position = Vector2( 7.85915, 8.99034 )
+position = Vector2( 7.91869, 8.99034 )
 scale = Vector2( 0.3, 0.3 )
 texture = ExtResource( 4 )
 
@@ -190,12 +190,12 @@ margin_bottom = 54.2482
 text_hint = "Fast speed (2)"
 
 [node name="Sprite1" type="Sprite" parent="SimControlHolder/ButtonSpeed2"]
-position = Vector2( 5.40897, 9.33931 )
+position = Vector2( 5.88528, 9.33931 )
 scale = Vector2( 0.3, 0.3 )
 texture = ExtResource( 4 )
 
 [node name="Sprite2" type="Sprite" parent="SimControlHolder/ButtonSpeed2"]
-position = Vector2( 9.45761, 9.27977 )
+position = Vector2( 9.93393, 9.27977 )
 scale = Vector2( 0.3, 0.3 )
 texture = ExtResource( 4 )
 
@@ -477,9 +477,9 @@ margin_bottom = 70.1038
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="Separator6" type="ColorRect" parent="."]
-margin_left = 946.172
+margin_left = 946.967
 margin_top = 10.1392
-margin_right = 948.172
+margin_right = 948.967
 margin_bottom = 70.1392
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
@@ -488,7 +488,7 @@ anchor_left = 1.0
 anchor_right = 1.0
 margin_left = -65.0
 margin_top = 15.0
-margin_right = -15.7131
+margin_right = -15.0
 margin_bottom = 65.0
 key_hint = "<hide>"
 text_hint = "Toggle animation smoothness"
@@ -508,20 +508,27 @@ scale = Vector2( 0.25, 0.25 )
 texture = ExtResource( 22 )
 
 [node name="LabelRestore" type="Label" parent="."]
-margin_left = 787.832
-margin_top = 8.05524
-margin_right = 941.832
-margin_bottom = 45.0552
+margin_left = 789.0
+margin_top = 11.0
+margin_right = 943.0
+margin_bottom = 48.0
 custom_fonts/font = ExtResource( 2 )
-text = "To restore progress, enter
-the last tool name you saw"
+text = "To restore progress, enter"
+
+[node name="LabelRestore2" type="Label" parent="."]
+margin_left = 789.0
+margin_top = 26.0
+margin_right = 943.0
+margin_bottom = 63.0
+custom_fonts/font = ExtResource( 2 )
+text = "the last tool name you saw"
 
 [node name="TextEditRestore" type="LineEdit" parent="."]
 self_modulate = Color( 0.541176, 0.584314, 0.941176, 1 )
 margin_left = 790.0
-margin_top = 46.0
+margin_top = 45.0
 margin_right = 906.0
-margin_bottom = 70.0
+margin_bottom = 69.0
 focus_mode = 1
 custom_fonts/font = ExtResource( 23 )
 max_length = 20
@@ -529,10 +536,10 @@ focus_mode = 1
 context_menu_enabled = false
 
 [node name="ButtonRestore" parent="." instance=ExtResource( 3 )]
-margin_left = 913.507
-margin_top = 46.3472
-margin_right = 937.507
-margin_bottom = 70.3472
+margin_left = 913.109
+margin_top = 45.3472
+margin_right = 937.109
+margin_bottom = 69.3472
 
 [node name="Label" type="Label" parent="ButtonRestore"]
 margin_left = 5.12622
