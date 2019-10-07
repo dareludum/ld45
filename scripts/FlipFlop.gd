@@ -31,10 +31,8 @@ func balls_entered(balls, main):
 	
 	interpolation_deg_from = HexCell.direction_to_degrees(self.direction)
 	if flip:
-		print("flip")
 		self.direction = HexCell.rotate_direction_cw(orig_direction)
 	else:
-		print("flop")
 		self.direction = orig_direction
 	interpolation_deg_to = HexCell.direction_to_degrees(self.direction)
 
