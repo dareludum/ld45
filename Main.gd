@@ -168,7 +168,7 @@ func sim_get_tool_cell(cell):
 func sim_update_tool_highlight():
 	for child in $Highlight/ToolHolder.get_children():
 		child.queue_free()
-	
+
 	var tool_ = sim_get_tool_cell(HexCell.new(Vector3.ZERO))
 	if tool_ == null:
 		return
@@ -377,14 +377,14 @@ func _process(delta: float) -> void:
 		child.animation_process(interpolation_t)
 
 
-func new_floating_text(cell_or_hex_pos, show_delay: float, text: String):
+func add_floating_text(cell_or_hex_pos, show_delay: float, text: String, color=null):
 	var ft = FloatingTextScene.instance()
 	if cell_or_hex_pos is HexCell:
 		ft.position = hex_grid.get_hex_center(cell_or_hex_pos.cube_coords)
 	else:
 		ft.position = hex_grid.get_hex_center(cell_or_hex_pos)
 	$FloatingTextHolder.add_child(ft)
-	ft.start(text, show_delay)
+	ft.start(text, show_delay, color)
 
 
 func add_ball(cell_or_pos, direction: Vector3, show_delay: float = 0.0):
@@ -623,13 +623,20 @@ func balls_collided(balls, hex_pos):
 				add_ball(b0.cell, HexCell.DIR_ALL[(d1 + 5) % 6], time_to_collision).set_tier(b0.tier)
 
 	if points > 0:
-		new_floating_text(0.5 * (b0.cell.cube_coords + b1.cell.cube_coords), time_to_collision, "+" + str(points))
-	queue_free_in(time_to_collision, to_delete)
+		var text: String
+		var color = null
+		if tick <= Globals.TARGET_ITERATIONS_COUNT:
+			sim_add_points(points)
+			text = "+" + str(points)
+		else:
+			text = str(points)
+			color = Color.gray
+		add_floating_text(0.5 * (b0.cell.cube_coords + b1.cell.cube_coords), time_to_collision, text, color)
+
+	if to_delete:
+		queue_free_in(time_to_collision, to_delete)
 
 	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
 	for ball in to_delete:
 		$BallHolder.remove_child(ball)
 		$BallToDeleteHolder.add_child(ball)
-
-	if tick <= Globals.TARGET_ITERATIONS_COUNT:
-		sim_add_points(points)
