@@ -327,7 +327,7 @@ margin_left = -0.279327
 margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
-target = 150
+target = 400
 
 [node name="ButtonCellReactor6" parent="CellHolder" instance=ExtResource( 7 )]
 margin_left = 426.125
@@ -345,7 +345,7 @@ margin_left = -0.279327
 margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
-target = 150
+target = 400
 
 [node name="Separator4" type="ColorRect" parent="."]
 margin_left = 708.102
