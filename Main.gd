@@ -111,37 +111,6 @@ func _ready():
 
 	self.connect("move_anim_done", self, "on_move_anim_done")
 
-	# TESTING CODE BEGIN
-
-#	var source = preload("res://scenes/Source.tscn").instance()
-#	source.init(hex_grid, Vector3(-2, 1, 1), HexCell.DIR_SE)
-#	$CellHolder.add_child(source)
-
-#	var mirror = MirrorScene.instance()
-#	mirror.init(hex_grid, Vector3(0, -1, 1), HexCell.DIR_SE)
-#	$CellHolder.add_child(mirror)
-
-#	for circle in [  # the ball positions in sim_stop are coupled with this
-#			{center = HexCell.DIR_SW * 3, radius = 2},
-#			{center = HexCell.DIR_SE * 3, radius = 1},
-#		]:
-#		var dir = HexCell.DIR_SE
-#		var pos = circle.radius * HexCell.DIR_S
-#		var i = 0
-#		while i < 6:
-#			var mirror = MirrorScene.instance()
-#			mirror.init(hex_grid, circle.center + pos, dir)
-#			$CellHolder.add_child(mirror)
-#			pos -= circle.radius * dir
-#			dir = mirror.cell.rotate_direction_cw(dir)
-#			i += 1
-#
-#	var amplifier = AmplifierScene.instance()
-#	amplifier.init(hex_grid, 3 * HexCell.DIR_NW, HexCell.DIR_SE)
-#	$CellHolder.add_child(amplifier)
-
-	# TESTING CODE END
-
 	ui_bar.set_hi(hi_score)
 	ui_bar.set_source_uses_count(TOOL_USES_MAX[EditorTool.SOURCE])
 	ui_bar.set_amplifier_uses_count(TOOL_USES_MAX[EditorTool.AMPLIFIER])
@@ -150,7 +119,6 @@ func _ready():
 
 	sim_speed = 1
 	sim_set_tool(EditorTool.SOURCE)
-	sim_stop() # TODO: remove, for now it just sets up the testing config
 
 
 # ===== Simulation Editor =====
@@ -290,13 +258,23 @@ func get_tick_time():
 		assert(false)
 
 
+func get_animation_speed():
+	if sim_speed == 1:
+		return 1.0
+	elif sim_speed == 2:
+		return Globals.TICK_TIME / Globals.TICK_TIME_FAST
+	elif sim_speed == 3:
+		return Globals.TICK_TIME / Globals.TICK_TIME_FASTEST
+	else:
+		assert(false)
+
+
 func sim_add_points(points: int):
 	score += points
 	ui_bar.set_points(score)
 
 
 func sim_start():
-	print("sim_start")
 	$Background.self_modulate = BackgroundColorRunning
 	ui_bar.simulation_started()
 
@@ -313,14 +291,15 @@ func sim_start():
 
 
 func sim_pause():
-	print("sim_pause")
 	$Background.self_modulate = BackgroundColorPaused
 	ui_bar.simulation_paused()
 	state = SimulationState.PAUSED
 
 
 func sim_stop():
-	print("sim_stop")
+	# flush all the queued operations before we delete the nodes they would work on
+	on_move_anim_done()
+
 	time_to_sim_step = 0.0
 	state = SimulationState.STOPPED
 
@@ -404,7 +383,7 @@ func on_move_anim_done():
 		var ft = FloatingTextScene.instance()
 		$FloatingTextHolder.add_child(ft)
 		ft.position = d.pos
-		ft.start(d.text, d.color)
+		ft.start(d.text, d.color, get_animation_speed())
 	if floating_texts_to_add:
 		floating_texts_to_add.clear()
 
