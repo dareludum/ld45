@@ -170,6 +170,9 @@ func sim_update_tool_highlight():
 		child.queue_free()
 	
 	var tool_ = sim_get_tool_cell(HexCell.new(Vector3.ZERO))
+	if tool_ == null:
+		return
+
 	if picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]:
 		tool_.get_node("Sprite").self_modulate = Color.orangered
 	$Highlight/ToolHolder.add_child(tool_)

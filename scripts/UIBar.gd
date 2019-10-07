@@ -79,7 +79,7 @@ func simulate_input_event(name):
 
 
 func _on_button_mouse_enter(button):
-	var lock = button.get_node("Lock")
+	var lock = button.get_node_or_null("Lock")
 	if lock != null and lock.visible:
 		$HintPanel/TextHint.text = "Get %d points in %d iterations to unlock" % [lock.target, Globals.TARGET_ITERATIONS_COUNT]
 	else:
@@ -87,7 +87,7 @@ func _on_button_mouse_enter(button):
 	$HintPanel.visible = true
 
 
-func _on_button_mouse_leave(button):
+func _on_button_mouse_leave(_button):
 	$HintPanel.visible = false
 
 

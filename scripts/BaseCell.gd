@@ -24,5 +24,5 @@ func init(grid: HexGrid, cell_or_hex_pos, direction: Vector3) -> void:
 func _on_init():
 	pass
 
-func animation_process(progress):
+func animation_process(_progress):
 	pass
