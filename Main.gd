@@ -323,14 +323,10 @@ func sim_stop():
 		child.reset()
 
 
-func sim_crash(reason: String = "no reason", locations: Array = []) -> void:
-	time_to_sim_step = 0.0
+func sim_crash(reason: String, locations: Array) -> void:
 	state = SimulationState.CRASHED
-
-	if locations:
-		print("sim_crash: %s at %s" % [reason, locations])
-	else:
-		print("sim_crash: %s (location missing)" % reason)
+	time_to_sim_step = 0.0
+	print("sim_crash: %s at %s" % [reason, locations])
 	$Background.self_modulate = BackgroundColorCrashed
 	$StatusBar/TextStatus.text = "Crashed: " + reason
 	$StatusBar/TextStatus.self_modulate = Color.orangered
@@ -425,6 +421,21 @@ func add_ball(cell_or_pos, direction: Vector3, hide_until_move_anim_end: bool = 
 		b.hide()
 		balls_to_show.append(b)
 	return b
+
+
+# remove the balls from the game logic immediately,
+# but keep them around until the end of the next move animation
+func delete_ball_after_move(ball: Ball):
+	$BallHolder.remove_child(ball)
+	$BallToDeleteHolder.add_child(ball)
+
+
+func delete_balls_after_move(balls: Array):
+	var from = $BallHolder
+	var to = $BallToDeleteHolder
+	for ball in balls:
+		from.remove_child(ball)
+		to.add_child(ball)
 
 
 func _unhandled_input(event):
@@ -547,9 +558,7 @@ func sim_step():
 		if child is Reactor3:
 			add_points(child.points, child.cell.cube_coords)
 			child.points = 0
-			for ball in visitors:
-				$BallHolder.remove_child(ball)
-				$BallToDeleteHolder.add_child(ball)
+			delete_balls_after_move(visitors)
 
 		# consume this collision to prevent both the ball-structure and ball-ball rules from applying
 		balls_moving_to.erase(hex_pos)
@@ -647,11 +656,7 @@ func balls_collided(balls, hex_pos):
 				set_ball_tier(add_ball(b0.cell, HexCell.DIR_ALL[(d1 + 5) % 6], true), b0.tier)
 
 	add_points(points, 0.5 * (b0.cell.cube_coords + b1.cell.cube_coords))
-
-	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
-	for ball in to_delete:
-		$BallHolder.remove_child(ball)
-		$BallToDeleteHolder.add_child(ball)
+	delete_balls_after_move(to_delete)
 
 
 func add_points(points: int, coords: Vector3):
