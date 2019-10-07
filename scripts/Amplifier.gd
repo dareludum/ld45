@@ -10,4 +10,4 @@ func balls_entered(balls, main) -> void:
 		main.sim_crash("max tier ball entered an amplifier", [self.cell.cube_coords])
 		return
 
-	b.set_tier(b.tier + 1, main.get_animation_time())
+	main.set_ball_tier(b, b.tier + 1)
