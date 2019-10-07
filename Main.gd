@@ -92,6 +92,7 @@ var sandbox_mode = false
 var sim_speed: int = 1
 var time_to_sim_step: float = 0.0
 var interpolation_t: float = 0.0
+var smooth_animation = false
 var tick: int = 0   # counts simulation steps, resets to 0 in sim_start
 var score: int = 0
 
@@ -118,6 +119,8 @@ func _ready():
 	ui_bar.set_reactor3_uses_count(TOOL_USES_MAX[EditorTool.REACTOR3])
 	ui_bar.set_reactor6_uses_count(TOOL_USES_MAX[EditorTool.REACTOR6])
 	ui_bar.connect("sandbox_click", self, "sim_enable_sandbox_mode")
+
+	ui_bar.get_node("ButtonSmooth/Script").connect("smoothness_changed", self, "on_smoothness_changed")
 
 	sim_speed = 1
 	sim_set_tool(EditorTool.SOURCE)
@@ -274,8 +277,10 @@ func get_tick_time():
 
 
 func get_animation_time() -> float:
-	return get_tick_time() / 1.5
-	# todo: return get_tick_time() if smooth animaton is on
+	if smooth_animation:
+		return get_tick_time()
+	else:
+		return get_tick_time() / 1.5
 
 
 func get_animation_speed():
@@ -417,6 +422,10 @@ func on_move_anim_done():
 
 	for node in $BallToDeleteHolder.get_children():
 		node.queue_free()
+
+
+func on_smoothness_changed(is_smooth):
+	smooth_animation = is_smooth
 
 
 func add_floating_text(cell_or_hex_pos, text: String, color=null):

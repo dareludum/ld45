@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://scripts/UIBar.gd" type="Script" id=1]
 [ext_resource path="res://fonts/HintFont.tres" type="DynamicFont" id=2]
@@ -19,6 +19,9 @@
 [ext_resource path="res://scenes/Reactor3.tscn" type="PackedScene" id=17]
 [ext_resource path="res://scenes/Y.tscn" type="PackedScene" id=18]
 [ext_resource path="res://scenes/Reactor6.tscn" type="PackedScene" id=19]
+[ext_resource path="res://scripts/ButtonSmooth.gd" type="Script" id=20]
+[ext_resource path="res://images/sawtooth.png" type="Texture" id=21]
+[ext_resource path="res://images/tilde.png" type="Texture" id=22]
 
 [node name="UIBar" type="Control"]
 anchor_right = 1.0
@@ -32,6 +35,7 @@ margin_bottom = 80.0
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="HintPanel" type="ColorRect" parent="."]
+editor/display_folded = true
 visible = false
 margin_top = 80.0
 margin_right = 250.0
@@ -119,6 +123,7 @@ margin_bottom = 70.3663
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="SimControlHolder" type="Control" parent="."]
+editor/display_folded = true
 margin_left = 100.0
 margin_top = 10.0
 margin_right = 166.0
@@ -430,6 +435,7 @@ margin_bottom = 70.1642
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="ButtonSandbox" parent="." instance=ExtResource( 11 )]
+editor/display_folded = true
 margin_left = 718.482
 margin_top = 15.1146
 margin_right = 768.482
@@ -459,3 +465,27 @@ margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
 target = 1000
+
+[node name="ButtonSmooth" parent="." instance=ExtResource( 11 )]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -65.0
+margin_top = 15.0
+margin_right = -15.7131
+margin_bottom = 65.0
+key_hint = "<hide>"
+text_hint = "Toggle animation smoothness"
+
+[node name="Script" type="Node" parent="ButtonSmooth"]
+script = ExtResource( 20 )
+
+[node name="Jerky" type="Sprite" parent="ButtonSmooth"]
+position = Vector2( 25, 25 )
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 21 )
+
+[node name="Smooth" type="Sprite" parent="ButtonSmooth"]
+visible = false
+position = Vector2( 25, 25 )
+scale = Vector2( 0.25, 0.25 )
+texture = ExtResource( 22 )

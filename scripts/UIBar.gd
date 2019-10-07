@@ -53,6 +53,8 @@ func _enter_tree():
 	assert(OK == $ButtonSandbox.connect("mouse_enter", self, "_on_button_mouse_enter"))
 	assert(OK == $ButtonSandbox.connect("mouse_leave", self, "_on_button_mouse_leave"))
 	assert(OK == $ButtonSandbox.connect("click", self, "_on_sandbox_click"))
+	assert(OK == $ButtonSmooth.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $ButtonSmooth.connect("mouse_leave", self, "_on_button_mouse_leave"))
 
 
 func set_points(points: int):
