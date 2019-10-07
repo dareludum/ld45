@@ -10,6 +10,15 @@ func _enter_tree():
 	assert(OK == $SimControlHolder/ButtonStop.connect("mouse_enter", self, "_on_button_mouse_enter"))
 	assert(OK == $SimControlHolder/ButtonStop.connect("mouse_leave", self, "_on_button_mouse_leave"))
 	assert(OK == $SimControlHolder/ButtonStop.connect("click", self, "_on_stop_click"))
+	assert(OK == $SimControlHolder/ButtonSpeed1.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $SimControlHolder/ButtonSpeed1.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $SimControlHolder/ButtonSpeed1.connect("click", self, "_on_speed1_click"))
+	assert(OK == $SimControlHolder/ButtonSpeed2.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $SimControlHolder/ButtonSpeed2.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $SimControlHolder/ButtonSpeed2.connect("click", self, "_on_speed2_click"))
+	assert(OK == $SimControlHolder/ButtonSpeed3.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $SimControlHolder/ButtonSpeed3.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $SimControlHolder/ButtonSpeed3.connect("click", self, "_on_speed3_click"))
 	assert(OK == $RotationHolder/ButtonRotateRight.connect("mouse_enter", self, "_on_button_mouse_enter"))
 	assert(OK == $RotationHolder/ButtonRotateRight.connect("mouse_leave", self, "_on_button_mouse_leave"))
 	assert(OK == $RotationHolder/ButtonRotateRight.connect("click", self, "_on_rotate_right_click"))
@@ -101,6 +110,18 @@ func _on_start_pause_click():
 
 func _on_stop_click():
 	simulate_input_event("sim_stop")
+
+
+func _on_speed1_click():
+	simulate_input_event("sim_speed_1")
+
+
+func _on_speed2_click():
+	simulate_input_event("sim_speed_2")
+
+
+func _on_speed3_click():
+	simulate_input_event("sim_speed_3")
 
 
 func _on_rotate_right_click():
