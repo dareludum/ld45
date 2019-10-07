@@ -187,6 +187,10 @@ func sim_update_tool_highlight():
 	for child in $Highlight/ToolHolder.get_children():
 		child.queue_free()
 
+	if state != SimulationState.STOPPED:
+		$Highlight.self_modulate = Color.white
+		return
+
 	var tool_ = sim_get_tool_cell(HexCell.new(Vector3.ZERO))
 	if tool_ == null:
 		$Highlight.self_modulate = Color.red
@@ -303,6 +307,7 @@ func sim_start():
 		status_bar.visible = true
 
 	state = SimulationState.RUNNING
+	sim_update_tool_highlight()
 	sim_step()
 	time_to_sim_step = get_tick_time()
 
@@ -321,6 +326,7 @@ func sim_stop():
 
 	$Background.self_modulate = BackgroundColorEditor
 	ui_bar.simulation_stopped()
+	sim_update_tool_highlight()
 	status_bar.visible = false
 
 	if tick >= Globals.TARGET_ITERATIONS_COUNT and score > hi_score:
