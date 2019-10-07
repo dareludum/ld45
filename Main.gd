@@ -87,6 +87,9 @@ var score: int = 0
 signal move_anim_done
 var time_to_move_anim_done: float = 0.0
 var floating_texts_to_add: Array = []
+var balls_to_show: Array = []
+var tiers_to_set: Array = []
+
 
 func _ready():
 	hex_grid.hex_scale = Vector2(50, 50)
@@ -373,6 +376,12 @@ func get_animation_time() -> float:
 	return Globals.get_animation_time(tick_timer.wait_time)
 
 
+func set_ball_tier(ball: Ball, tier: int):
+	# the logic applies immediately, and the graphics when the move animation ends
+	ball.tier = tier
+	tiers_to_set.append({ball=ball, tier=tier})
+
+
 func _process(delta: float) -> void:
 	interpolation_t = min(1.0, interpolation_t + delta / get_animation_time())
 	for child in $CellHolder.get_children():
@@ -394,7 +403,21 @@ func on_move_anim_done():
 		$FloatingTextHolder.add_child(ft)
 		ft.position = d.pos
 		ft.start(d.text, d.color)
-	floating_texts_to_add = []
+	if floating_texts_to_add:
+		floating_texts_to_add.clear()
+
+	for b in balls_to_show:
+		b.show()
+	if balls_to_show:
+		balls_to_show.clear()
+
+	for d in tiers_to_set:
+		d.ball.set_tier(d.tier)
+	if tiers_to_set:
+		tiers_to_set.clear()
+
+	for node in $BallToDeleteHolder.get_children():
+		node.queue_free()
 
 
 func add_floating_text(cell_or_hex_pos, text: String, color=null):
@@ -410,27 +433,15 @@ func add_floating_text(cell_or_hex_pos, text: String, color=null):
 	})
 
 
-func add_ball(cell_or_pos, direction: Vector3, show_delay: float = 0.0):
+func add_ball(cell_or_pos, direction: Vector3, hide_until_move_anim_end: bool = false):
 	var b = BallScene.instance()
 	b.init(hex_grid, HexCell.new(cell_or_pos), direction)
 	$BallHolder.add_child(b)
-	if show_delay > 0.0:
+	if hide_until_move_anim_end:
 		b.hide()
-		show_node_in(show_delay, b)
+		balls_to_show.append(b)
 	return b
 
-
-# this executes asynchronously, i.e. the call returns immediately,
-# but the coroutine keeps running on its own
-func queue_free_in(delay: float, nodes: Array):
-	yield(get_tree().create_timer(delay), "timeout")
-	for node in nodes:
-		node.queue_free()
-
-
-func show_node_in(delay: float, node):
-	yield(get_tree().create_timer(delay), "timeout")
-	node.show()
 
 func _unhandled_input(event):
 	if event is InputEventMouse:
@@ -505,6 +516,7 @@ func _game_tick():
 			$StatusBar/TextStatus.text = "Validated! Zero score - try colliding the balls"
 		$StatusBar/TextStatus.self_modulate = Color.greenyellow
 
+	# schedule the next move_anim_done signal
 	time_to_move_anim_done = get_animation_time()
 
 	var ball_holder = $BallHolder
@@ -560,7 +572,6 @@ func _game_tick():
 			if n < 2:
 				continue
 			balls_collided(visitors, hex_pos)
-			print("%d balls in cell %s" % [n, hex_pos])
 
 	# apply rotations
 	for child in $CellHolder.get_children():
@@ -568,7 +579,6 @@ func _game_tick():
 			child.rotate_cw()
 
 	interpolation_t = 0.0
-	print("Tick")
 
 
 func balls_collided(balls, hex_pos):
@@ -587,7 +597,6 @@ func balls_collided(balls, hex_pos):
 
 	var points = 0
 	var to_delete = []
-	var time_to_collision = get_animation_time()
 
 	if b0.tier != b1.tier:
 		# different tiers: the lower one is converted to points, the higher one loses energy
@@ -596,7 +605,7 @@ func balls_collided(balls, hex_pos):
 			b0 = b1
 			b1 = tmp
 		points = b0.tier + b1.tier
-		b1.set_tier(b1.tier - b0.tier, time_to_collision)
+		set_ball_tier(b1, b1.tier - b0.tier)
 		to_delete.append(b0)
 	else:  # b0.tier == b1.tier
 		if direction_difference == 1:
@@ -607,8 +616,8 @@ func balls_collided(balls, hex_pos):
 				to_delete.append(b1)
 			else:
 				points = 2 * b0.tier
-				b0.set_tier(b0.tier - 1, time_to_collision)
-				b1.set_tier(b1.tier - 1, time_to_collision)
+				set_ball_tier(b0, b0.tier - 1)
+				set_ball_tier(b1, b1.tier - 1)
 		# 120 degrees: merge the balls, emit points, and sometimes new balls
 		elif direction_difference == 2:
 			var d2 = (d0 + d1) / 2
@@ -625,9 +634,9 @@ func balls_collided(balls, hex_pos):
 				points = 15
 
 			if b0.tier > 1:
-				b1.set_tier(b1.tier - 1, time_to_collision)
-				add_ball(b1.cell, HexCell.DIR_ALL[d0], time_to_collision).set_tier(b1.tier)
-				add_ball(b1.cell, -HexCell.DIR_ALL[d2], time_to_collision).set_tier(b1.tier)
+				set_ball_tier(b1, b1.tier - 1)
+				set_ball_tier(add_ball(b1.cell, HexCell.DIR_ALL[d0], true), b1.tier)
+				set_ball_tier(add_ball(b1.cell, -HexCell.DIR_ALL[d2], true), b1.tier)
 		# 180 degrees: emit points and sometimes new balls
 		elif direction_difference == 3:
 			if b0.tier <= 1:
@@ -642,10 +651,10 @@ func balls_collided(balls, hex_pos):
 			if b0.tier > 1:
 				b0.direction = HexCell.DIR_ALL[(d0 + 1) % 6]
 				b1.direction = HexCell.DIR_ALL[(d1 + 1) % 6]
-				b0.set_tier(b0.tier - 1, time_to_collision)
-				b1.set_tier(b1.tier - 1, time_to_collision)
-				add_ball(b0.cell, HexCell.DIR_ALL[(d0 + 5) % 6], time_to_collision).set_tier(b0.tier)
-				add_ball(b0.cell, HexCell.DIR_ALL[(d1 + 5) % 6], time_to_collision).set_tier(b0.tier)
+				set_ball_tier(b0, b0.tier - 1)
+				set_ball_tier(b1, b1.tier - 1)
+				set_ball_tier(add_ball(b0.cell, HexCell.DIR_ALL[(d0 + 5) % 6], true), b0.tier)
+				set_ball_tier(add_ball(b0.cell, HexCell.DIR_ALL[(d1 + 5) % 6], true), b0.tier)
 
 	if points > 0:
 		var text: String
@@ -658,8 +667,6 @@ func balls_collided(balls, hex_pos):
 			color = Color.gray
 		add_floating_text(0.5 * (b0.cell.cube_coords + b1.cell.cube_coords), text, color)
 
-	if to_delete:
-		queue_free_in(time_to_collision, to_delete)
 
 	# remove the balls from the game logic immediately, don't rely on animation_time < tick_time
 	for ball in to_delete:

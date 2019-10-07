@@ -14,11 +14,9 @@ func _on_init():
 	move_to(self.cell)
 
 
-func set_tier(tier_, ui_change_delay: float = 0.0):
+func set_tier(tier_):
 	assert(0 < tier_ and tier_ <= Globals.MAX_BALL_TIER)
-	tier = tier_
-	if ui_change_delay > 0.0:
-		yield(get_tree().create_timer(ui_change_delay), "timeout")
+	tier = tier_  # don't early exit if they're equal, allow forcing the UI change
 	var sprite = $Sprite
 	if tier == 1:
 		sprite.modulate = Globals.BALL_YELLOW
@@ -31,6 +29,7 @@ func set_tier(tier_, ui_change_delay: float = 0.0):
 		sprite.scale = Globals.BALL_LARGE
 	else:
 		assert(false)
+
 
 func animation_process(progress: float):  # progress is between 0 and 1
 	if progress >= 1.0:
