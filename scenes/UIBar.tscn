@@ -1,21 +1,24 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://scripts/UIBar.gd" type="Script" id=1]
 [ext_resource path="res://fonts/HintFont.tres" type="DynamicFont" id=2]
 [ext_resource path="res://scenes/UIButtonSmall.tscn" type="PackedScene" id=3]
-[ext_resource path="res://scenes/UIButtonTiny.tscn" type="PackedScene" id=4]
-[ext_resource path="res://fonts/KeyHintFontSmall.tres" type="DynamicFont" id=5]
-[ext_resource path="res://images/rotate_right.png" type="Texture" id=6]
-[ext_resource path="res://images/rotate_left.png" type="Texture" id=7]
-[ext_resource path="res://scenes/UIButtonBig.tscn" type="PackedScene" id=8]
-[ext_resource path="res://scenes/Source.tscn" type="PackedScene" id=9]
-[ext_resource path="res://scenes/Mirror.tscn" type="PackedScene" id=10]
-[ext_resource path="res://scenes/ButtonLock.tscn" type="PackedScene" id=11]
-[ext_resource path="res://scenes/Amplifier.tscn" type="PackedScene" id=12]
-[ext_resource path="res://scenes/FlipFlop.tscn" type="PackedScene" id=13]
-[ext_resource path="res://scenes/Reactor3.tscn" type="PackedScene" id=14]
-[ext_resource path="res://scenes/Y.tscn" type="PackedScene" id=15]
-[ext_resource path="res://scenes/Reactor6.tscn" type="PackedScene" id=16]
+[ext_resource path="res://images/play.png" type="Texture" id=4]
+[ext_resource path="res://images/pause.png" type="Texture" id=5]
+[ext_resource path="res://images/stop.png" type="Texture" id=6]
+[ext_resource path="res://scenes/UIButtonTiny.tscn" type="PackedScene" id=7]
+[ext_resource path="res://fonts/KeyHintFontSmall.tres" type="DynamicFont" id=8]
+[ext_resource path="res://images/rotate_right.png" type="Texture" id=9]
+[ext_resource path="res://images/rotate_left.png" type="Texture" id=10]
+[ext_resource path="res://scenes/UIButtonBig.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scenes/Source.tscn" type="PackedScene" id=12]
+[ext_resource path="res://scenes/Mirror.tscn" type="PackedScene" id=13]
+[ext_resource path="res://scenes/ButtonLock.tscn" type="PackedScene" id=14]
+[ext_resource path="res://scenes/Amplifier.tscn" type="PackedScene" id=15]
+[ext_resource path="res://scenes/FlipFlop.tscn" type="PackedScene" id=16]
+[ext_resource path="res://scenes/Reactor3.tscn" type="PackedScene" id=17]
+[ext_resource path="res://scenes/Y.tscn" type="PackedScene" id=18]
+[ext_resource path="res://scenes/Reactor6.tscn" type="PackedScene" id=19]
 
 [node name="UIBar" type="Control"]
 anchor_right = 1.0
@@ -116,7 +119,6 @@ margin_bottom = 70.3663
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
 [node name="SimControlHolder" type="Control" parent="."]
-editor/display_folded = true
 margin_left = 100.0
 margin_top = 10.0
 margin_right = 166.0
@@ -130,12 +132,28 @@ margin_right = 30.027
 margin_bottom = 27.1155
 text_hint = "Start/pause the simulation (Space)"
 
+[node name="SpriteStart" type="Sprite" parent="SimControlHolder/ButtonStartPause"]
+position = Vector2( 13.0239, 11.8914 )
+scale = Vector2( 0.4, 0.4 )
+texture = ExtResource( 4 )
+
+[node name="SpritePause" type="Sprite" parent="SimControlHolder/ButtonStartPause"]
+visible = false
+position = Vector2( 11.6351, 11.8914 )
+scale = Vector2( 0.4, 0.4 )
+texture = ExtResource( 5 )
+
 [node name="ButtonStop" parent="SimControlHolder" instance=ExtResource( 3 )]
 margin_left = 35.7133
 margin_top = 3.11557
 margin_right = 59.7133
 margin_bottom = 27.1155
 text_hint = "Stop the simulation (Esc)"
+
+[node name="Sprite" type="Sprite" parent="SimControlHolder/ButtonStop"]
+position = Vector2( 11.642, 11.9145 )
+scale = Vector2( 0.4, 0.4 )
+texture = ExtResource( 6 )
 
 [node name="BackgroundSpeedControl" type="ColorRect" parent="SimControlHolder"]
 margin_left = 6.0
@@ -144,26 +162,56 @@ margin_right = 60.0
 margin_bottom = 57.0
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
-[node name="ButtonSpeed1" parent="SimControlHolder" instance=ExtResource( 4 )]
+[node name="ButtonSpeed1" parent="SimControlHolder" instance=ExtResource( 7 )]
 margin_left = 9.07213
 margin_top = 35.8827
 margin_right = 23.0721
 margin_bottom = 53.8827
 text_hint = "Normal speed (1)"
 
-[node name="ButtonSpeed2" parent="SimControlHolder" instance=ExtResource( 4 )]
+[node name="Sprite" type="Sprite" parent="SimControlHolder/ButtonSpeed1"]
+position = Vector2( 7.85915, 8.99034 )
+scale = Vector2( 0.3, 0.3 )
+texture = ExtResource( 4 )
+
+[node name="ButtonSpeed2" parent="SimControlHolder" instance=ExtResource( 7 )]
 margin_left = 25.8116
 margin_top = 36.2482
 margin_right = 39.8116
 margin_bottom = 54.2482
 text_hint = "Fast speed (2)"
 
-[node name="ButtonSpeed3" parent="SimControlHolder" instance=ExtResource( 4 )]
+[node name="Sprite1" type="Sprite" parent="SimControlHolder/ButtonSpeed2"]
+position = Vector2( 5.40897, 9.33931 )
+scale = Vector2( 0.3, 0.3 )
+texture = ExtResource( 4 )
+
+[node name="Sprite2" type="Sprite" parent="SimControlHolder/ButtonSpeed2"]
+position = Vector2( 9.45761, 9.27977 )
+scale = Vector2( 0.3, 0.3 )
+texture = ExtResource( 4 )
+
+[node name="ButtonSpeed3" parent="SimControlHolder" instance=ExtResource( 7 )]
 margin_left = 43.0627
 margin_top = 36.0289
 margin_right = 57.0627
 margin_bottom = 54.0289
 text_hint = "Fastest speed (3)"
+
+[node name="Sprite1" type="Sprite" parent="SimControlHolder/ButtonSpeed3"]
+position = Vector2( 4.82877, 9.32045 )
+scale = Vector2( 0.3, 0.3 )
+texture = ExtResource( 4 )
+
+[node name="Sprite2" type="Sprite" parent="SimControlHolder/ButtonSpeed3"]
+position = Vector2( 7.8056, 9.26091 )
+scale = Vector2( 0.3, 0.3 )
+texture = ExtResource( 4 )
+
+[node name="Sprite3" type="Sprite" parent="SimControlHolder/ButtonSpeed3"]
+position = Vector2( 10.8421, 9.14183 )
+scale = Vector2( 0.3, 0.3 )
+texture = ExtResource( 4 )
 
 [node name="Separator2" type="ColorRect" parent="."]
 margin_left = 169.837
@@ -199,14 +247,14 @@ margin_left = 2.67836
 margin_top = -0.36549
 margin_right = 11.6784
 margin_bottom = 12.6345
-custom_fonts/font = ExtResource( 5 )
+custom_fonts/font = ExtResource( 8 )
 text = "E"
 
 [node name="Sprite" type="Sprite" parent="RotationHolder/ButtonRotateRight"]
 position = Vector2( 12.0804, 12.0034 )
 rotation = 0.0523599
 scale = Vector2( 0.1, 0.1 )
-texture = ExtResource( 6 )
+texture = ExtResource( 9 )
 
 [node name="ButtonRotateLeft" parent="RotationHolder" instance=ExtResource( 3 )]
 margin_left = 5.90494
@@ -227,14 +275,14 @@ margin_left = 3.17393
 margin_top = -0.338558
 margin_right = 12.1739
 margin_bottom = 12.6614
-custom_fonts/font = ExtResource( 5 )
+custom_fonts/font = ExtResource( 8 )
 text = "Q"
 
 [node name="Sprite" type="Sprite" parent="RotationHolder/ButtonRotateLeft"]
 position = Vector2( 12.1573, 12.3882 )
 rotation = -0.0523599
 scale = Vector2( 0.1, 0.1 )
-texture = ExtResource( 7 )
+texture = ExtResource( 10 )
 
 [node name="Separator3" type="ColorRect" parent="."]
 margin_left = 215.831
@@ -251,7 +299,7 @@ margin_right = 354.0
 margin_bottom = 70.0
 rect_pivot_offset = Vector2( 50, 40 )
 
-[node name="ButtonCellEraser" parent="CellHolder" instance=ExtResource( 8 )]
+[node name="ButtonCellEraser" parent="CellHolder" instance=ExtResource( 11 )]
 margin_left = 5.98224
 margin_top = 5.37181
 margin_right = 55.9822
@@ -259,7 +307,7 @@ margin_bottom = 55.3718
 key_hint = "R"
 text_hint = "Pick Eraser (R)"
 
-[node name="ButtonCellSource" parent="CellHolder" instance=ExtResource( 8 )]
+[node name="ButtonCellSource" parent="CellHolder" instance=ExtResource( 11 )]
 margin_left = 66.4151
 margin_top = 4.76137
 margin_right = 116.415
@@ -267,10 +315,10 @@ margin_bottom = 54.7614
 key_hint = "A"
 text_hint = "Pick Source (A)"
 
-[node name="Source" parent="CellHolder/ButtonCellSource" instance=ExtResource( 9 )]
+[node name="Source" parent="CellHolder/ButtonCellSource" instance=ExtResource( 12 )]
 position = Vector2( 24.295, 25.2719 )
 
-[node name="ButtonCellMirror" parent="CellHolder" instance=ExtResource( 8 )]
+[node name="ButtonCellMirror" parent="CellHolder" instance=ExtResource( 11 )]
 margin_left = 126.237
 margin_top = 5.12763
 margin_right = 176.237
@@ -278,13 +326,13 @@ margin_bottom = 55.1276
 key_hint = "S"
 text_hint = "Pick Mirror (S)"
 
-[node name="Mirror" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 10 )]
+[node name="Mirror" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 13 )]
 position = Vector2( 24.5394, 24.7835 )
 
-[node name="Lock" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 11 )]
+[node name="Lock" parent="CellHolder/ButtonCellMirror" instance=ExtResource( 14 )]
 target = 20
 
-[node name="ButtonCellAmplifier" parent="CellHolder" instance=ExtResource( 8 )]
+[node name="ButtonCellAmplifier" parent="CellHolder" instance=ExtResource( 11 )]
 margin_left = 186.474
 margin_top = 5.13791
 margin_right = 236.474
@@ -292,17 +340,17 @@ margin_bottom = 55.1379
 key_hint = "D"
 text_hint = "Pick Amplifier (D)"
 
-[node name="Amplifier" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 12 )]
+[node name="Amplifier" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 15 )]
 position = Vector2( 24.5873, 24.5032 )
 
-[node name="Lock" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 11 )]
+[node name="Lock" parent="CellHolder/ButtonCellAmplifier" instance=ExtResource( 14 )]
 margin_left = -0.279327
 margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
 target = 60
 
-[node name="ButtonCellFlipFlop" parent="CellHolder" instance=ExtResource( 8 )]
+[node name="ButtonCellFlipFlop" parent="CellHolder" instance=ExtResource( 11 )]
 margin_left = 245.616
 margin_top = 4.7973
 margin_right = 295.616
@@ -310,17 +358,17 @@ margin_bottom = 54.7973
 key_hint = "F"
 text_hint = "Pick Flip-flop (F)"
 
-[node name="FlipFlop" parent="CellHolder/ButtonCellFlipFlop" instance=ExtResource( 13 )]
+[node name="FlipFlop" parent="CellHolder/ButtonCellFlipFlop" instance=ExtResource( 16 )]
 position = Vector2( 24.8251, 24.6503 )
 
-[node name="Lock" parent="CellHolder/ButtonCellFlipFlop" instance=ExtResource( 11 )]
+[node name="Lock" parent="CellHolder/ButtonCellFlipFlop" instance=ExtResource( 14 )]
 margin_left = -0.279327
 margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
 target = 100
 
-[node name="ButtonCellReactor3" parent="CellHolder" instance=ExtResource( 8 )]
+[node name="ButtonCellReactor3" parent="CellHolder" instance=ExtResource( 11 )]
 margin_left = 305.966
 margin_top = 5.19969
 margin_right = 355.966
@@ -328,17 +376,17 @@ margin_bottom = 55.1997
 key_hint = "Z"
 text_hint = "Pick 3-Reactor (Z)"
 
-[node name="Reactor3" parent="CellHolder/ButtonCellReactor3" instance=ExtResource( 14 )]
+[node name="Reactor3" parent="CellHolder/ButtonCellReactor3" instance=ExtResource( 17 )]
 position = Vector2( 24.9126, 24.8078 )
 
-[node name="Lock" parent="CellHolder/ButtonCellReactor3" instance=ExtResource( 11 )]
+[node name="Lock" parent="CellHolder/ButtonCellReactor3" instance=ExtResource( 14 )]
 margin_left = -0.279327
 margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
 target = 150
 
-[node name="ButtonCellY" parent="CellHolder" instance=ExtResource( 8 )]
+[node name="ButtonCellY" parent="CellHolder" instance=ExtResource( 11 )]
 margin_left = 366.044
 margin_top = 5.22953
 margin_right = 416.044
@@ -346,17 +394,17 @@ margin_bottom = 55.2295
 key_hint = "X"
 text_hint = "Pick Y-Combinator (X)"
 
-[node name="Y" parent="CellHolder/ButtonCellY" instance=ExtResource( 15 )]
+[node name="Y" parent="CellHolder/ButtonCellY" instance=ExtResource( 18 )]
 position = Vector2( 25.1815, 24.5821 )
 
-[node name="Lock" parent="CellHolder/ButtonCellY" instance=ExtResource( 11 )]
+[node name="Lock" parent="CellHolder/ButtonCellY" instance=ExtResource( 14 )]
 margin_left = -0.279327
 margin_top = -0.317152
 margin_right = 49.7207
 margin_bottom = 49.6828
 target = 400
 
-[node name="ButtonCellReactor6" parent="CellHolder" instance=ExtResource( 8 )]
+[node name="ButtonCellReactor6" parent="CellHolder" instance=ExtResource( 11 )]
 margin_left = 426.125
 margin_top = 5.33337
 margin_right = 476.125
@@ -364,10 +412,10 @@ margin_bottom = 55.3334
 key_hint = "C"
 text_hint = "Pick 6-Reactor (C)"
 
-[node name="Reactor6" parent="CellHolder/ButtonCellReactor6" instance=ExtResource( 16 )]
+[node name="Reactor6" parent="CellHolder/ButtonCellReactor6" instance=ExtResource( 19 )]
 position = Vector2( 25.1816, 24.7319 )
 
-[node name="Lock" parent="CellHolder/ButtonCellReactor6" instance=ExtResource( 11 )]
+[node name="Lock" parent="CellHolder/ButtonCellReactor6" instance=ExtResource( 14 )]
 margin_left = -0.279327
 margin_top = -0.317152
 margin_right = 49.7207

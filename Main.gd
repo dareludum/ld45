@@ -283,6 +283,7 @@ func sim_add_points(points: int):
 func sim_start():
 	print("sim_start")
 	$Background.self_modulate = BackgroundColorRunning
+	ui_bar.simulation_started()
 
 	if state == SimulationState.STOPPED:
 		tick = 0
@@ -298,6 +299,7 @@ func sim_start():
 func sim_pause():
 	print("sim_pause")
 	$Background.self_modulate = BackgroundColorPaused
+	ui_bar.simulation_paused()
 	state = SimulationState.PAUSED
 
 
@@ -307,6 +309,7 @@ func sim_stop():
 	state = SimulationState.STOPPED
 
 	$Background.self_modulate = BackgroundColorEditor
+	ui_bar.simulation_stopped()
 	status_bar.visible = false
 
 	if tick >= Globals.TARGET_ITERATIONS_COUNT and score > hi_score:

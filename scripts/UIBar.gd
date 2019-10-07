@@ -82,6 +82,24 @@ func set_reactor3_uses_count(count: int):
 	$CellHolder/ButtonCellReactor3.set_uses_count(count)
 
 
+func simulation_started():
+	$SimControlHolder/ButtonStartPause/SpriteStart.visible = false
+	$SimControlHolder/ButtonStartPause/SpritePause.visible = true
+	pass
+
+
+func simulation_paused():
+	$SimControlHolder/ButtonStartPause/SpriteStart.visible = true
+	$SimControlHolder/ButtonStartPause/SpritePause.visible = false
+	pass
+
+
+func simulation_stopped():
+	$SimControlHolder/ButtonStartPause/SpriteStart.visible = true
+	$SimControlHolder/ButtonStartPause/SpritePause.visible = false
+	pass
+
+
 func simulate_input_event(name):
 	var event = InputEventAction.new()
 	event.action = name
