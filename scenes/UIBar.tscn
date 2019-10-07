@@ -428,3 +428,34 @@ margin_top = 10.1642
 margin_right = 710.102
 margin_bottom = 70.1642
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
+
+[node name="ButtonSandbox" parent="." instance=ExtResource( 11 )]
+margin_left = 718.482
+margin_top = 15.1146
+margin_right = 768.482
+margin_bottom = 65.1147
+key_hint = "<hide>"
+text_hint = "Enable sandbox mode"
+
+[node name="Source" parent="ButtonSandbox" instance=ExtResource( 12 )]
+position = Vector2( 30.5474, 15.7298 )
+scale = Vector2( 0.25, 0.25 )
+
+[node name="Source2" parent="ButtonSandbox" instance=ExtResource( 12 )]
+position = Vector2( 14.5984, 15.8457 )
+scale = Vector2( 0.25, 0.25 )
+
+[node name="Source3" parent="ButtonSandbox" instance=ExtResource( 12 )]
+position = Vector2( 14.5981, 31.9107 )
+scale = Vector2( 0.25, 0.25 )
+
+[node name="Source4" parent="ButtonSandbox" instance=ExtResource( 12 )]
+position = Vector2( 30.6633, 31.9107 )
+scale = Vector2( 0.25, 0.25 )
+
+[node name="Lock" parent="ButtonSandbox" instance=ExtResource( 14 )]
+margin_left = -0.279327
+margin_top = -0.317152
+margin_right = 49.7207
+margin_bottom = 49.6828
+target = 1000

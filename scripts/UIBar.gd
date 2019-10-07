@@ -2,6 +2,7 @@ extends Control
 
 const Globals = preload("res://scripts/Globals.gd")
 
+signal sandbox_click
 
 func _enter_tree():
 	assert(OK == $SimControlHolder/ButtonStartPause.connect("mouse_enter", self, "_on_button_mouse_enter"))
@@ -49,6 +50,9 @@ func _enter_tree():
 	assert(OK == $CellHolder/ButtonCellReactor6.connect("mouse_enter", self, "_on_button_mouse_enter"))
 	assert(OK == $CellHolder/ButtonCellReactor6.connect("mouse_leave", self, "_on_button_mouse_leave"))
 	assert(OK == $CellHolder/ButtonCellReactor6.connect("click", self, "_on_pick_reactor6_click"))
+	assert(OK == $ButtonSandbox.connect("mouse_enter", self, "_on_button_mouse_enter"))
+	assert(OK == $ButtonSandbox.connect("mouse_leave", self, "_on_button_mouse_leave"))
+	assert(OK == $ButtonSandbox.connect("click", self, "_on_sandbox_click"))
 
 
 func set_points(points: int):
@@ -64,6 +68,7 @@ func set_hi(points: int):
 		$CellHolder/ButtonCellReactor3/Lock,
 		$CellHolder/ButtonCellY/Lock,
 		$CellHolder/ButtonCellReactor6/Lock,
+		$ButtonSandbox/Lock,
 	]
 	for lock in locks:
 		if points >= lock.target:
@@ -184,3 +189,7 @@ func _on_pick_ycomb_click():
 
 func _on_pick_reactor6_click():
 	simulate_input_event("sim_pick_reactor6")
+
+
+func _on_sandbox_click():
+	emit_signal("sandbox_click")

@@ -86,6 +86,7 @@ var placed_cells_per_tool = {
 	EditorTool.REACTOR3: 0,
 	EditorTool.REACTOR6: 0,
 }
+var sandbox_mode = false
 
 # Run time - specific
 var sim_speed: int = 1
@@ -116,12 +117,22 @@ func _ready():
 	ui_bar.set_amplifier_uses_count(TOOL_USES_MAX[EditorTool.AMPLIFIER])
 	ui_bar.set_reactor3_uses_count(TOOL_USES_MAX[EditorTool.REACTOR3])
 	ui_bar.set_reactor6_uses_count(TOOL_USES_MAX[EditorTool.REACTOR6])
+	ui_bar.connect("sandbox_click", self, "sim_enable_sandbox_mode")
 
 	sim_speed = 1
 	sim_set_tool(EditorTool.SOURCE)
 
 
 # ===== Simulation Editor =====
+
+
+func sim_enable_sandbox_mode():
+	ui_bar.set_source_uses_count(-1)
+	ui_bar.set_amplifier_uses_count(-1)
+	ui_bar.set_reactor3_uses_count(-1)
+	ui_bar.set_reactor6_uses_count(-1)
+	sandbox_mode = true
+	sim_update_tool_highlight()
 
 
 func sim_get_tool_cell(cell):
@@ -166,7 +177,7 @@ func sim_update_tool_highlight():
 	else:
 		$Highlight.self_modulate = Color.white
 
-	if picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]:
+	if not sandbox_mode and picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]:
 		tool_.get_node("Sprite").self_modulate = Color.orangered
 	$Highlight/ToolHolder.add_child(tool_)
 
@@ -190,6 +201,9 @@ func sim_rotate_tool_ccw():
 
 
 func sim_update_tool_uses(tool_, modifier: int):
+	if sandbox_mode:
+		return
+
 	# Modifier is -1 when a cell is placed, +1 when it's erased
 	var new_count = placed_cells_per_tool[tool_] - modifier
 	var uses_left = TOOL_USES_MAX[tool_] - new_count
@@ -217,7 +231,8 @@ func sim_cell_click(cell):
 			current_cell = child
 
 	# This condition allows rotating a placed Source or Reactor[3|6] in place even if no more usages
-	if (picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]
+	if (not sandbox_mode
+		and picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]
 		and not (current_cell != null and current_cell is Source and picked_tool == EditorTool.SOURCE)
 		and not (current_cell != null and current_cell is Reactor3 and picked_tool == EditorTool.REACTOR3)
 		and not (current_cell != null and current_cell is Reactor6 and picked_tool == EditorTool.REACTOR6)):

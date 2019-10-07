@@ -14,6 +14,7 @@ var is_mouse_inside: bool = false
 
 func set_key_hint(value):
 	$KeyHint/TextKeyHint.text = value
+	$KeyHint.visible = value != "<hide>"
 
 
 func get_key_hint():
