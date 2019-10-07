@@ -57,9 +57,9 @@ const TOOL_UNLOCK_TARGETS = {
 	EditorTool.MIRROR: 10,
 	EditorTool.AMPLIFIER: 40,
 	EditorTool.FLIPFLOP: 100,
-	EditorTool.REACTOR3: 100, # TODO
-	EditorTool.YCOMB: 100, # TODO
-	EditorTool.REACTOR6: 100, # TODO
+	EditorTool.REACTOR3: 150,
+	EditorTool.YCOMB: 150, # TODO
+	EditorTool.REACTOR6: 150, # TODO
 }
 
 const TOOL_USES_MAX = {
@@ -68,7 +68,7 @@ const TOOL_USES_MAX = {
 }
 
 var state = SimulationState.STOPPED
-var hi_score: int = 100
+var hi_score: int = 150
 
 # Design time - specific
 var picked_tool
