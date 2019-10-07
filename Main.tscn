@@ -11,6 +11,7 @@ extents = Vector2( 512, 260 )
 [node name="Main" type="Node"]
 
 [node name="Area2D" type="Area2D" parent="."]
+editor/display_folded = true
 position = Vector2( 512, 300 )
 script = ExtResource( 1 )
 
@@ -72,31 +73,36 @@ text = "HEX"
 
 [node name="ToolHolder" type="Node2D" parent="Area2D/Highlight"]
 
-[node name="UIBar" parent="Area2D" instance=ExtResource( 3 )]
-margin_left = -512.248
-margin_top = -300.122
-margin_right = -512.248
-margin_bottom = -300.122
+[node name="UILayer" type="CanvasLayer" parent="."]
 
-[node name="StatusBar" type="ColorRect" parent="Area2D"]
+[node name="UIBar" parent="UILayer" instance=ExtResource( 3 )]
+margin_left = -0.247986
+margin_top = -0.122009
+margin_right = -0.247986
+margin_bottom = -520.122
+mouse_filter = 1
+
+[node name="StatusBar" type="ColorRect" parent="UILayer"]
 visible = false
 modulate = Color( 1, 1, 1, 0.752941 )
-margin_left = -512.0
-margin_top = 265.0
-margin_right = -234.0
-margin_bottom = 300.0
+margin_top = 565.0
+margin_right = 278.0
+margin_bottom = 600.0
+mouse_filter = 1
 color = Color( 0.133333, 0.164706, 0.411765, 1 )
 
-[node name="Background" type="ColorRect" parent="Area2D/StatusBar"]
+[node name="Background" type="ColorRect" parent="UILayer/StatusBar"]
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 273.0
 margin_bottom = 30.0
+mouse_filter = 1
 color = Color( 0.270588, 0.301961, 0.564706, 1 )
 
-[node name="TextStatus" type="Label" parent="Area2D/StatusBar"]
+[node name="TextStatus" type="Label" parent="UILayer/StatusBar"]
 margin_left = 13.0
 margin_top = 9.0
 margin_right = 218.0
 margin_bottom = 26.0
+mouse_filter = 1
 custom_fonts/font = ExtResource( 4 )

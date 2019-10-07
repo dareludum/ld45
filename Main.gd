@@ -34,6 +34,9 @@ var hex_grid = HexGrid.new()
 onready var highlight = get_node("Highlight")
 onready var area_coords = get_node("Highlight/AreaCoords")
 onready var hex_coords = get_node("Highlight/HexCoords")
+onready var ui_bar = get_tree().root.get_node("Main/UILayer/UIBar")
+onready var status_bar = get_tree().root.get_node("Main/UILayer/StatusBar")
+onready var status_bar_text = get_tree().root.get_node("Main/UILayer/StatusBar/TextStatus")
 
 enum SimulationState {
 	RUNNING,
@@ -137,10 +140,10 @@ func _ready():
 
 	# TESTING CODE END
 
-	$UIBar.set_hi(hi_score)
-	$UIBar.set_source_uses_count(TOOL_USES_MAX[EditorTool.SOURCE])
-	$UIBar.set_amplifier_uses_count(TOOL_USES_MAX[EditorTool.AMPLIFIER])
-	$UIBar.set_reactor3_uses_count(TOOL_USES_MAX[EditorTool.REACTOR3])
+	ui_bar.set_hi(hi_score)
+	ui_bar.set_source_uses_count(TOOL_USES_MAX[EditorTool.SOURCE])
+	ui_bar.set_amplifier_uses_count(TOOL_USES_MAX[EditorTool.AMPLIFIER])
+	ui_bar.set_reactor3_uses_count(TOOL_USES_MAX[EditorTool.REACTOR3])
 
 	sim_speed = 1
 	sim_set_tool(EditorTool.ERASER)
@@ -213,11 +216,11 @@ func sim_update_tool_uses(tool_, modifier: int):
 	var new_count = placed_cells_per_tool[tool_] - modifier
 	var uses_left = TOOL_USES_MAX[tool_] - new_count
 	if tool_ == EditorTool.SOURCE:
-		$UIBar.set_source_uses_count(uses_left)
+		ui_bar.set_source_uses_count(uses_left)
 	elif tool_ == EditorTool.AMPLIFIER:
-		$UIBar.set_amplifier_uses_count(uses_left)
+		ui_bar.set_amplifier_uses_count(uses_left)
 	elif tool_ == EditorTool.REACTOR3:
-		$UIBar.set_reactor3_uses_count(uses_left)
+		ui_bar.set_reactor3_uses_count(uses_left)
 	else:
 		assert(false)
 	placed_cells_per_tool[tool_] = new_count
@@ -274,7 +277,7 @@ func get_tick_time():
 
 func sim_add_points(points: int):
 	score += points
-	$UIBar.set_points(score)
+	ui_bar.set_points(score)
 
 
 func sim_start():
@@ -284,8 +287,8 @@ func sim_start():
 	if state == SimulationState.STOPPED:
 		tick = 0
 		score = 0
-		$UIBar.set_points(score)
-		$StatusBar.visible = true
+		ui_bar.set_points(score)
+		status_bar.visible = true
 
 	state = SimulationState.RUNNING
 	sim_step()
@@ -304,11 +307,11 @@ func sim_stop():
 	state = SimulationState.STOPPED
 
 	$Background.self_modulate = BackgroundColorEditor
-	$StatusBar.visible = false
+	status_bar.visible = false
 
 	if tick >= Globals.TARGET_ITERATIONS_COUNT and score > hi_score:
 		hi_score = score
-		$UIBar.set_hi(hi_score)
+		ui_bar.set_hi(hi_score)
 
 	# remove balls
 	for ball in $BallHolder.get_children():
@@ -329,8 +332,8 @@ func sim_crash(reason: String, locations: Array) -> void:
 	time_to_sim_step = 0.0
 	print("sim_crash: %s at %s" % [reason, locations])
 	$Background.self_modulate = BackgroundColorCrashed
-	$StatusBar/TextStatus.text = "Crashed: " + reason
-	$StatusBar/TextStatus.self_modulate = Color.orangered
+	status_bar_text.text = "Crashed: " + reason
+	status_bar_text.self_modulate = Color.orangered
 
 	for location in locations:
 		for child in $BackgroundCellHolder.get_children():
@@ -502,14 +505,14 @@ func sim_step():
 
 	tick += 1
 	if tick <= Globals.TARGET_ITERATIONS_COUNT:
-		$StatusBar/TextStatus.text = "Validating iteration %d/%d..." % [tick, Globals.TARGET_ITERATIONS_COUNT]
-		$StatusBar/TextStatus.self_modulate = Color.white
+		status_bar_text.text = "Validating iteration %d/%d..." % [tick, Globals.TARGET_ITERATIONS_COUNT]
+		status_bar_text.self_modulate = Color.white
 	elif tick == Globals.TARGET_ITERATIONS_COUNT + 1:
 		if score != 0:
-			$StatusBar/TextStatus.text = "Validated! Stop simulation to claim %d points" % score
+			status_bar_text.text = "Validated! Stop simulation to claim %d points" % score
 		else:
-			$StatusBar/TextStatus.text = "Validated! Zero score - try colliding the balls"
-		$StatusBar/TextStatus.self_modulate = Color.greenyellow
+			status_bar_text.text = "Validated! Zero score - try colliding the balls"
+		status_bar_text.self_modulate = Color.greenyellow
 
 	# schedule the next move_anim_done signal
 	time_to_move_anim_done = get_animation_time()
