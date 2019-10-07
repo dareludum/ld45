@@ -506,39 +506,40 @@ func _unhandled_input(event):
 				or Input.is_mouse_button_pressed(BUTTON_LEFT))):
 					sim_cell_click(cell)
 
-	if Input.is_action_just_pressed("sim_start_pause"):
-		if state == SimulationState.STOPPED || state == SimulationState.PAUSED:
-			sim_start()
-		elif state == SimulationState.RUNNING:
-			sim_pause()
-	elif Input.is_action_just_pressed("sim_stop"):
-		sim_stop()
-	elif Input.is_action_just_pressed("sim_speed_1"):
-		sim_set_speed(1)
-	elif Input.is_action_just_pressed("sim_speed_2"):
-		sim_set_speed(2)
-	elif Input.is_action_just_pressed("sim_speed_3"):
-		sim_set_speed(3)
-	elif Input.is_action_just_pressed("sim_rotate_left"):
-		sim_rotate_tool_ccw()
-	elif Input.is_action_just_pressed("sim_rotate_right"):
-		sim_rotate_tool_cw()
-	elif Input.is_action_just_pressed("sim_pick_eraser"):
-		sim_set_tool(EditorTool.ERASER)
-	elif Input.is_action_just_pressed("sim_pick_source"):
-		sim_set_tool(EditorTool.SOURCE)
-	elif Input.is_action_just_pressed("sim_pick_mirror"):
-		sim_set_tool(EditorTool.MIRROR)
-	elif Input.is_action_just_pressed("sim_pick_amplifier"):
-		sim_set_tool(EditorTool.AMPLIFIER)
-	elif Input.is_action_just_pressed("sim_pick_flipflop"):
-		sim_set_tool(EditorTool.FLIPFLOP)
-	elif Input.is_action_just_pressed("sim_pick_reactor3"):
-		sim_set_tool(EditorTool.REACTOR3)
-	elif Input.is_action_just_pressed("sim_pick_ycomb"):
-		sim_set_tool(EditorTool.YCOMB)
-	elif Input.is_action_just_pressed("sim_pick_reactor6"):
-		sim_set_tool(EditorTool.REACTOR6)
+	if event is InputEventKey or event is InputEventAction:
+		if Input.is_action_just_pressed("sim_start_pause"):
+			if state == SimulationState.STOPPED || state == SimulationState.PAUSED:
+				sim_start()
+			elif state == SimulationState.RUNNING:
+				sim_pause()
+		elif Input.is_action_just_pressed("sim_stop"):
+			sim_stop()
+		elif Input.is_action_just_pressed("sim_speed_1"):
+			sim_set_speed(1)
+		elif Input.is_action_just_pressed("sim_speed_2"):
+			sim_set_speed(2)
+		elif Input.is_action_just_pressed("sim_speed_3"):
+			sim_set_speed(3)
+		elif Input.is_action_just_pressed("sim_rotate_left"):
+			sim_rotate_tool_ccw()
+		elif Input.is_action_just_pressed("sim_rotate_right"):
+			sim_rotate_tool_cw()
+		elif Input.is_action_just_pressed("sim_pick_eraser"):
+			sim_set_tool(EditorTool.ERASER)
+		elif Input.is_action_just_pressed("sim_pick_source"):
+			sim_set_tool(EditorTool.SOURCE)
+		elif Input.is_action_just_pressed("sim_pick_mirror"):
+			sim_set_tool(EditorTool.MIRROR)
+		elif Input.is_action_just_pressed("sim_pick_amplifier"):
+			sim_set_tool(EditorTool.AMPLIFIER)
+		elif Input.is_action_just_pressed("sim_pick_flipflop"):
+			sim_set_tool(EditorTool.FLIPFLOP)
+		elif Input.is_action_just_pressed("sim_pick_reactor3"):
+			sim_set_tool(EditorTool.REACTOR3)
+		elif Input.is_action_just_pressed("sim_pick_ycomb"):
+			sim_set_tool(EditorTool.YCOMB)
+		elif Input.is_action_just_pressed("sim_pick_reactor6"):
+			sim_set_tool(EditorTool.REACTOR6)
 
 
 # Main logic function, does one simulation step
