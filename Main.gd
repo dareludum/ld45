@@ -149,7 +149,7 @@ func _ready():
 	ui_bar.set_reactor6_uses_count(TOOL_USES_MAX[EditorTool.REACTOR6])
 
 	sim_speed = 1
-	sim_set_tool(EditorTool.ERASER)
+	sim_set_tool(EditorTool.SOURCE)
 	sim_stop() # TODO: remove, for now it just sets up the testing config
 
 
@@ -189,7 +189,10 @@ func sim_update_tool_highlight():
 
 	var tool_ = sim_get_tool_cell(HexCell.new(Vector3.ZERO))
 	if tool_ == null:
+		$Highlight.self_modulate = Color.red
 		return
+	else:
+		$Highlight.self_modulate = Color.white
 
 	if picked_tool in placed_cells_per_tool and placed_cells_per_tool[picked_tool] == TOOL_USES_MAX[picked_tool]:
 		tool_.get_node("Sprite").self_modulate = Color.orangered
